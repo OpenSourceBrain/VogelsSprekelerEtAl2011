@@ -1,0 +1,4 @@
+/PyNN/*.pyc
+/PyNN/*.v
+/PyNN/*.dat
+*.*~
