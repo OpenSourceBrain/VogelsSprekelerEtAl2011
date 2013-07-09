@@ -67,7 +67,8 @@ inhibSpikes 			= 	inhibPopulation.getSpikes()
 ##	The network is forced out of the AI regime and begins to fire at high rates
 ## 	Inhibitory plasticity is turned on.
 
-print("Fig. 4, A")
+#print("Fig. 4, A")
+
 
 
 i_to_e.setWeights(0.0)
@@ -82,10 +83,14 @@ i_to_i.setWeights(0.0)
 ## run(60*60)
 run(100)
 
+
+print("Ploting spikes of neuron populations")
+
+
 excSpikes			= 	excPopulation.getSpikes()
 pattern1Spikes 			=	pattern1.getSpikes()
 pattern2Spikes 			=	pattern2.getSpikes()
-patternIntersectionSpikes 	=	patternIntersecton.getSpikes()
+patternIntersectionSpikes 	=	patternIntersection.getSpikes()
 controlSpikes 			=	controlPopulation.getSpikes()
 inhibSpikes 			= 	inhibPopulation.getSpikes()
 
@@ -128,11 +133,15 @@ plt.xlabel('Time (ms)')
 plt.ylabel('Spikes of inhibitory neurons')
 
 
+
+plt.show()
+
+
 ## Fig. 4, B
 ##
 ## 	Inhibitory plasticity has restored asynchronous irregular dynamics
 
-print("Fig. 4, B")
+#print("Fig. 4, B")
 
 
 stdpModel = STDPMechanism(timing_dependence=SpikePairRule(tau_plus=20.0, tau_minus=20.0), weight_dependence=AdditiveWeightDependence(w_min=0, w_max=0.02, A_plus=0.01, A_minus=0.012))
@@ -140,7 +149,7 @@ stdpModel = STDPMechanism(timing_dependence=SpikePairRule(tau_plus=20.0, tau_min
 
 
 
-run(5)
+#run(5)
 
 ## Fig. 4, C
 ##
@@ -148,7 +157,7 @@ run(5)
 ## 	are increased ad-hoc by a factor of 5. The neurons of hte subset begin
 ## 	to exhibit elevated and more sychronized activity
 
-print("Fig. 4, C")
+#print("Fig. 4, C")
 
 
 
@@ -157,7 +166,7 @@ print("Fig. 4, C")
 
 ## run(60*60 - 5)
 
-run(30)
+#run(30)
 
 
 ## Fig. 4, D
@@ -165,14 +174,14 @@ run(30)
 ## 	Inhibitory plasticity has succesfully suppressed any elevated activity
 ## 	from the pattern and restored the global background state
 
-print("Fig. 4, D")
+#print("Fig. 4, D")
 
 
 
 
 
 
-run(5)
+#run(5)
 
 ## Fig. 4, E
 ##
@@ -181,17 +190,16 @@ run(5)
 ## 	Activity inside the pattern stays asynchronous and irregular, and the rest
 ## 	of the network, including the other pattern, ramains nearly unaffected
 
-print("Fig. 4, E")
+#print("Fig. 4, E")
 
 
 
 
 
 
-plt.show()
 
 
-print("fim")
+#print("end")
 
 
 
