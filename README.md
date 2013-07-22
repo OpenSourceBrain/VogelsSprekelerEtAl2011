@@ -1,4 +1,4 @@
-VogelsEtAl2000
+VogelsEtAl2011
 ==============
 
 Network model from: Vogels TP, Sprekeler H, Zenke F, Clopath C, Gerstner W (2011) Inhibitory plasticity 
