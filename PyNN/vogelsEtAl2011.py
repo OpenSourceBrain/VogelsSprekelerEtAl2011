@@ -46,8 +46,8 @@ numOfNeuronsInhibPopulation = 2000
 
 
 connectivity = 0.02
-weightExcSynapses = 0.003 	# [uS]
-weightInhibSynapses = 0.03 	# [uS]
+weightExcSynapses = 0.003 		# [uS]
+weightInhibToInhibSynapses = 0.03 	# [uS]
 potentiationFactor = 5
 
 setup(timestep=0.1, min_delay=0.5)
@@ -67,6 +67,11 @@ tau_refrac 	= 5.0	# [ms]
 i_offset 	= 0.2	# [nA]
 
 
+
+
+eta = 1e-4
+eta = weightInhibToInhibSynapses * eta 
+rho = 0.003
 
 
 neuronParameters = 	{
@@ -145,8 +150,8 @@ pattern_synapse_type 		= StaticSynapse(weight = potentiationFactor, delay=0.5)
 #inhibitory_static_synapse_type 	= StaticSynapse(weight = weightInhibSynapses, delay=0.5)
 
 inhibitory_stdp_synapse_type 	= STDPMechanism(weight_dependence = AdditiveWeightDependence(w_max=0.3),
-                         		timing_dependence = Vogels2011Rule(eta=1e-1, rho=1e-3, on=0),
-                         		weight=0.03, delay=0.5)
+                         		timing_dependence = Vogels2011Rule(eta=eta, rho=rho, on=0),
+                         		weight=weightInhibToInhibSynapses, delay=0.5)
 
 print("-----------------------------------------------")
 print("------- Creating excitatory projections -------")
@@ -374,8 +379,6 @@ plotISICVHist(subPopPattern1Spikes, 13, 'red')
 plt.subplot(4, 5, 12)
 plotISICVHist(subPopControlSpikes, 13, 'black')
 
-plt.show()
-
 
 ## Fig. 4, B
 ##
@@ -442,33 +445,28 @@ plotISICVHist(subPopControlSpikes, 13, 'black')
 
 
 
+connections['p1_to_e'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p1_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p1_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p1_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p1_to_c'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p1_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
 
-pattern_synapse_type 		= StaticSynapse(weight = potentiationFactor * weightExcSynapses, delay=0.1)
-
-p1_to_e = Projection(pattern1, 		excPopulation, 		fpc, 	exc_synapse_type)
-p1_to_p1= Projection(pattern1, 		pattern1, 		fpc, 	pattern_synapse_type)
-p1_to_p2= Projection(pattern1, 		pattern2, 		fpc, 	exc_synapse_type)
-p1_to_pi= Projection(pattern1, 		patternIntersection, 	fpc, 	pattern_synapse_type)
-
-p1_to_c = Projection(pattern1, 		controlPopulation, 	fpc, 	exc_synapse_type)
-p1_to_i = Projection(pattern1, 		inhibPopulation, 	fpc, 	exc_synapse_type)
+connections['p2_to_e'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p2_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p2_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p2_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p2_to_c'].set(weight = weightExcSynapses * potentiationFactor)
+connections['p2_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
 
-p2_to_e = Projection(pattern2, 		excPopulation, 		fpc, 	exc_synapse_type)
-p2_to_p1= Projection(pattern2, 		pattern1, 		fpc, 	exc_synapse_type)
-p2_to_p2= Projection(pattern2, 		pattern2, 		fpc, 	pattern_synapse_type)
-p2_to_pi= Projection(pattern2, 		patternIntersection, 	fpc, 	pattern_synapse_type)
-p2_to_c = Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type)
-p2_to_i = Projection(pattern2, 		inhibPopulation, 	fpc, 	exc_synapse_type)
-
-
-pi_to_e = Projection(pattern2, 		excPopulation, 		fpc, 	exc_synapse_type)
-pi_to_p1= Projection(pattern2, 		pattern1, 		fpc, 	pattern_synapse_type)
-pi_to_p2= Projection(pattern2, 		pattern2, 		fpc, 	pattern_synapse_type)
-pi_to_pi= Projection(pattern2, 		patternIntersection, 	fpc, 	pattern_synapse_type)
-pi_to_c = Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type)
-pi_to_i = Projection(pattern2, 		inhibPopulation, 	fpc, 	exc_synapse_type)
+connections['pi_to_e'].set(weight = weightExcSynapses * potentiationFactor)
+connections['pi_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
+connections['pi_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
+connections['pi_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
+connections['pi_to_c'].set(weight = weightExcSynapses * potentiationFactor)
+connections['pi_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
 
 run(5)
