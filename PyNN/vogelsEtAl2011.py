@@ -69,7 +69,8 @@ i_offset 	= 0.2	# [nA]
 
 
 
-eta = 1e-4
+#eta = 1e-4
+eta = 1e-1 # changed to speed up simulation
 eta = weightInhibToInhibSynapses * eta 
 rho = 0.003
 
@@ -150,7 +151,7 @@ pattern_synapse_type 		= StaticSynapse(weight = potentiationFactor, delay=0.5)
 #inhibitory_static_synapse_type 	= StaticSynapse(weight = weightInhibSynapses, delay=0.5)
 
 inhibitory_stdp_synapse_type 	= STDPMechanism(weight_dependence = AdditiveWeightDependence(w_max=0.3),
-                         		timing_dependence = Vogels2011Rule(eta=eta, rho=rho, on=0),
+                         		timing_dependence = Vogels2011Rule(eta=0, rho=rho),
                          		weight=weightInhibToInhibSynapses, delay=0.5)
 
 print("-----------------------------------------------")
@@ -282,20 +283,20 @@ simCPUTime_pre = timer.diff()
 
 print("\nsimCPUTime: %s" %simCPUTime_pre)
 
-excSpikes			= 	excPopulation.get_data('spikes')
-pattern1Spikes 			=	pattern1.get_data('spikes')
-pattern2Spikes 			=	pattern2.get_data('spikes')
-patternIntersectionSpikes 	=	patternIntersection.get_data('spikes')
-controlSpikes 			=	controlPopulation.get_data('spikes')
-inhibSpikes 			= 	inhibPopulation.get_data('spikes')
+excSpikes			= 	excPopulation.get_data('spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
 
 plt.subplot(4, 5, 1)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-
+'''
 plt.subplot(4, 5, 6)
 plotISICVHist(pattern1Spikes, 13, 'red')
-
+'''
 
 ## Fig. 4, A
 ##
@@ -324,11 +325,11 @@ connections['i_to_pi'].set(weight=0)
 connections['i_to_c'].set(weight=0)
 
 
-connections['i_to_e'].set(on=1)
-connections['i_to_p1'].set(on=1)
-connections['i_to_p2'].set(on=1)
-connections['i_to_pi'].set(on=1)
-connections['i_to_c'].set(on=1)
+connections['i_to_e'].set(eta=eta)
+connections['i_to_p1'].set(eta=eta)
+connections['i_to_p2'].set(eta=eta)
+connections['i_to_pi'].set(eta=eta)
+connections['i_to_c'].set(eta=eta)
 
 
 
@@ -357,28 +358,28 @@ print("100%")
 simCPUTime_4A = timer.diff()
 
 
-excSpikes			= 	excPopulation.get_data('spikes')
-pattern1Spikes 			=	pattern1.get_data('spikes')
-pattern2Spikes 			=	pattern2.get_data('spikes')
-patternIntersectionSpikes 	=	patternIntersection.get_data('spikes')
-controlSpikes 			=	controlPopulation.get_data('spikes')
-inhibSpikes 			= 	inhibPopulation.get_data('spikes')
+excSpikes			= 	excPopulation.get_data('spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes')
-subPopControlSpikes 		= 	subPopControl.get_data('spikes')
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
 
 print("ploting Fig. 4A")
 
 plt.subplot(4, 5, 2)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-
+'''
 plt.subplot(4, 5, 7)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
 plt.subplot(4, 5, 12)
 plotISICVHist(subPopControlSpikes, 13, 'black')
-
+'''
 
 ## Fig. 4, B
 ##
@@ -410,28 +411,28 @@ run(26)
 print("100%")
 
 
-excSpikes			= 	excPopulation.get_data('spikes')
-pattern1Spikes 			=	pattern1.get_data('spikes')
-pattern2Spikes 			=	pattern2.get_data('spikes')
-patternIntersectionSpikes 	=	patternIntersection.get_data('spikes')
-controlSpikes 			=	controlPopulation.get_data('spikes')
-inhibSpikes 			= 	inhibPopulation.get_data('spikes')
+excSpikes			= 	excPopulation.get_data('spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes')
-subPopControlSpikes 		= 	subPopControl.get_data('spikes')
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
 
 print("ploting Fig. 4B")
 
 plt.subplot(4, 5, 3)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-
+'''
 plt.subplot(4, 5, 8)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
 plt.subplot(4, 5, 13)
 plotISICVHist(subPopControlSpikes, 13, 'black')
-
+'''
 
 
 
@@ -471,28 +472,28 @@ connections['pi_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
 run(5)
 
-excSpikes			= 	excPopulation.get_data('spikes')
-pattern1Spikes 			=	pattern1.get_data('spikes')
-pattern2Spikes 			=	pattern2.get_data('spikes')
-patternIntersectionSpikes 	=	patternIntersection.get_data('spikes')
-controlSpikes 			=	controlPopulation.get_data('spikes')
-inhibSpikes 			= 	inhibPopulation.get_data('spikes')
+excSpikes			= 	excPopulation.get_data('spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes')
-subPopControlSpikes 		= 	subPopControl.get_data('spikes')
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
 
 print("ploting Fig. 4C")
 
 plt.subplot(4, 5, 4)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-
+'''
 plt.subplot(4, 5, 9)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
 plt.subplot(4, 5, 14)
 plotISICVHist(subPopControlSpikes, 13, 'black')
-
+'''
 
 
 
@@ -531,26 +532,26 @@ print("100%")
 print("ploting Fig. 4D")
 
 
-excSpikes			= 	excPopulation.get_data('spikes')
-pattern1Spikes 			=	pattern1.get_data('spikes')
-pattern2Spikes 			=	pattern2.get_data('spikes')
-patternIntersectionSpikes 	=	patternIntersection.get_data('spikes')
-controlSpikes 			=	controlPopulation.get_data('spikes')
-inhibSpikes 			= 	inhibPopulation.get_data('spikes')
+excSpikes			= 	excPopulation.get_data('spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes')
-subPopControlSpikes 		= 	subPopControl.get_data('spikes')
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
 
 plt.subplot(4, 5, 5)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-
+'''
 plt.subplot(4, 5, 10)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
 plt.subplot(4, 5, 15)
 plotISICVHist(subPopControlSpikes, 13, 'black')
-
+'''
 
 plt.show()
 
