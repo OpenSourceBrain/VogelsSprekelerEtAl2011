@@ -475,6 +475,8 @@ connections['p1_to_c'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
 
+
+
 connections['p2_to_e'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p2_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p2_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
