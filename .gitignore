@@ -2,3 +2,4 @@
 /PyNN/*.v
 /PyNN/*.dat
 *.*~
+/.project
