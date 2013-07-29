@@ -20,6 +20,7 @@ Adapted from:
 ##
 #############################################
 
+
 from pyNN.random import RandomDistribution, NumpyRNG
 from pyNN.utility import get_script_args, Timer, ProgressBar, init_logging, normalized_filename
 import matplotlib.pyplot as plt

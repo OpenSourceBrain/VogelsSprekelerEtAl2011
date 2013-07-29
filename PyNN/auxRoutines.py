@@ -95,7 +95,6 @@ def calculateISICV2 (neuronSpikes):
 		return np.std(neuronISIs) / np.mean(neuronISIs)
 
 
-
 def plotRaster(popSpikes, color):
 	seg = popSpikes.segments[0]
 	for spiketrain in seg.spiketrains:
