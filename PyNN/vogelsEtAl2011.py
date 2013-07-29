@@ -109,8 +109,8 @@ timeSimFig4E_part2 = 4000		# 5 sec (5000 ms)
 
 ### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
 
-downscaleFactor = 50000
-minSimTime = 1
+downscaleFactor = 10000
+minSimTime = 1 #[ms]
 
 eta = eta * downscaleFactor
 
@@ -295,7 +295,7 @@ connections['i_to_pi'] 	= Projection(inhibPopulation, 	patternIntersection, 	fpc
 print('\ni_to_c: ')
 connections['i_to_c'] 	= Projection(inhibPopulation, 	controlPopulation, 	fpc, 	inhibitory_stdp_synapse_type)
 print('\ni_to_i: ')
-connections['i_to_i'] 	= Projection(inhibPopulation, 	inhibPopulation, 	fpc, 	inhibitory_stdp_synapse_type) # "on" should be always zero
+connections['i_to_i'] 	= Projection(inhibPopulation, 	inhibPopulation, 	fpc, 	inhibitory_stdp_synapse_type) # "eta" should be always zero
 
 
 
@@ -319,6 +319,8 @@ patternIntersection.record('spikes')
 controlPopulation.record('spikes')
 inhibPopulation.record('spikes')
 
+subPopPattern1.record('spikes')
+subPopControl.record('spikes')
 
 
 buildCPUTime = timer.diff()
@@ -354,7 +356,7 @@ plt.subplot(4, 6, 7)
 plotRaster(pattern1Spikes, 'red')
 
 plt.subplot(4, 6, 13)
-plotISICVHist(subPopPattern1Spikes, 'red')
+plotISICVHist(pattern1Spikes, 'red')
 
 
 ## Fig. 4, A
@@ -370,14 +372,14 @@ print("Starting simulation to generate Fig. 4")
 print("--------------------------------------")
 
 
-
+'''
 excPopulation.record('spikes')
 pattern1.record('spikes')
 pattern2.record('spikes')
 patternIntersection.record('spikes')
 controlPopulation.record('spikes')
 inhibPopulation.record('spikes')
-
+'''
 
 connections['i_to_e'].set(weight=0)
 connections['i_to_p1'].set(weight=0)
@@ -420,10 +422,10 @@ plt.subplot(4, 6, 2)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 8)
-plotRaster(subPopPattern1Spikes, 'red')
+plotRaster(pattern1Spikes, 'red')
 
 plt.subplot(4, 6, 14)
-plotISICVHist(subPopPattern1Spikes, 'red')
+plotISICVHist(pattern1Spikes, 'red')
 
 
 ## Fig. 4, B
@@ -655,8 +657,8 @@ totalCPUTime = simCPUTime_pre + simCPUTime_4A + simCPUTime_4B + simCPUTime_4C + 
 print("\nTotal CPU time: %s seconds" %totalCPUTime)
 
 #fig.subplots_adjust(left=0.8)
-cbar_ax = fig.add_axes([0.0, 0.8, 0.03, 0.2])
-cb = fig.colorbar(im, cax=cbar_ax, cmap=plt.cm.afmhot)
+cbar_ax = fig.add_axes([0.05, 0.6, 0.03, 0.2])
+cb = fig.colorbar(im, cax=cbar_ax)
 
 #plt.colorbar()
 

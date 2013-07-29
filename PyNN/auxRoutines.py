@@ -62,7 +62,6 @@ def getNeuronISIs2 (neuronSpikes):
 		return np.diff(neuronSpikes)
 
 
-
 def calculateNeuronFiringRate (neuronIndex, popSpikes):
 	"In order to return a valid value the simulation time frame must be of 1000 ms"
 	return np.size(getNeuronSpikeTimes(neuronIndex, popSpikes))
@@ -199,7 +198,7 @@ def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, cont
 		plt.scatter(i*np.ones(100), j, c=grid[i, :], hold="true")
 	'''
 	##plt.imshow(grid, cmap=plt.cm.afmhot)
-	im = plt.imshow(grid, vmin=0, vmax=200)
+	im = plt.imshow(grid, vmin=0, vmax=300)
 	return im
 
 
