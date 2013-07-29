@@ -467,7 +467,6 @@ plotISICVHist(subPopControlSpikes, 13, 'black')
 ##	Original simulation time: 5 sec (5000 ms)
 
 
-
 connections['p1_to_e'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
