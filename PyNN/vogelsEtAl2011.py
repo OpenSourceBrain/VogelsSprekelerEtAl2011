@@ -29,12 +29,12 @@ simulator_name = get_script_args(1)[0]
 
 exec("from pyNN.%s import *" % simulator_name)
 
+print("\n")
 print "Starting PyNN with simulator: %s"%simulator_name
 
 timer = Timer()
 
 # Total of 8000 excitatory neurons and 2000 inhibitory neurons
-
 
 numOfNeuronsExcPopulation = 5712
 numOfNeuronsPattern1 = 720
@@ -71,8 +71,10 @@ i_offset 	= 0.2	# [nA]
 
 #eta = 1e-4
 eta = 1e-1 # changed to speed up simulation
-eta = weightInhibToInhibSynapses * eta 
+eta = weightInhibToInhibSynapses * eta  # weight of inhibitory to excitatory synapses
 rho = 0.003
+
+synapseDelay = 0.5 # [ms]
 
 
 neuronParameters = 	{
@@ -91,6 +93,48 @@ neuronParameters = 	{
 
 
 cell_type = IF_cond_exp(**neuronParameters)
+
+
+
+# Simulation time setup
+
+timePreSim 	= 60000 		# 1 min (60000 ms)
+timeSimFig4A 	= 1000000
+timeSimFig4B 	= 2600000		# 60 min (60 * 60 * 1000 ms)
+timeSimFig4C 	= 5000			# 5 sec (5000 ms)
+timeSimFig4D 	= 3600000 - 5000 	# 60 min (60 * 60 * 1000 ms)
+timeSimFig4E_part1 = 1000
+timeSimFig4E_part2 = 4000		# 5 sec (5000 ms)
+
+
+
+### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
+
+downscaleFactor = 5000
+minSimTime = 1
+
+timePreSim 	= int(round(timePreSim/downscaleFactor))
+timeSimFig4A 	= int(round(timeSimFig4A/downscaleFactor))
+timeSimFig4B 	= int(round(timeSimFig4B/downscaleFactor))
+timeSimFig4C 	= int(round(timeSimFig4C/downscaleFactor))
+timeSimFig4D 	= int(round(timeSimFig4D/downscaleFactor))
+timeSimFig4E_part1 = int(round(timeSimFig4E_part1/downscaleFactor))
+timeSimFig4E_part2 = int(round(timeSimFig4E_part2/downscaleFactor))
+
+if timePreSim <= 0:
+	timePreSim = minSimTime
+if timeSimFig4A <= 0:
+	timeSimFig4A = minSimTime
+if timeSimFig4B <= 0:
+	timeSimFig4B = minSimTime
+if timeSimFig4C <= 0:
+	timeSimFig4C = minSimTime
+if timeSimFig4D <= 0:
+	timeSimFig4D = minSimTime
+if timeSimFig4E_part1 <= 0:
+	timeSimFig4E_part1 = minSimTime
+if timeSimFig4E_part2 <= 0:
+	timeSimFig4E_part2 = minSimTime
 
 timer.start()
 
@@ -144,15 +188,15 @@ fpc 	= FixedProbabilityConnector(connectivity, callback=progress_bar)
 # Need to correct the max weight of the stdp to 0.3 uS
 
 
-exc_synapse_type 		= StaticSynapse(weight = weightExcSynapses, delay=0.5)
+exc_synapse_type 		= StaticSynapse(weight = weightExcSynapses, delay=synapseDelay)
 
-pattern_synapse_type 		= StaticSynapse(weight = potentiationFactor, delay=0.5)
+#pattern_synapse_type 		= StaticSynapse(weight = potentiationFactor * weightExcSynapses, delay=synapseDelay)
 
 #inhibitory_static_synapse_type 	= StaticSynapse(weight = weightInhibSynapses, delay=0.5)
 
-inhibitory_stdp_synapse_type 	= STDPMechanism(weight_dependence = AdditiveWeightDependence(w_max=0.3),
+inhibitory_stdp_synapse_type 	= STDPMechanism(weight_dependence = AdditiveWeightDependence(w_min=0, w_max=10*weightInhibToInhibSynapses),
                          		timing_dependence = Vogels2011Rule(eta=0, rho=rho),
-                         		weight=weightInhibToInhibSynapses, delay=0.5)
+                         		weight=weightInhibToInhibSynapses, delay=synapseDelay)
 
 print("-----------------------------------------------")
 print("------- Creating excitatory projections -------")
@@ -177,11 +221,11 @@ connections['e_to_i'] 	= Projection(excPopulation, 	inhibPopulation, 	fpc, 	exc_
 print('\np1_to_e: ')
 connections['p1_to_e'] 	= Projection(pattern1, 		excPopulation, 		fpc, 	exc_synapse_type)
 print('\np1_to_p1: ')
-connections['p1_to_p1']	= Projection(pattern1, 		pattern1, 		fpc, 	pattern_synapse_type)
+connections['p1_to_p1']	= Projection(pattern1, 		pattern1, 		fpc, 	exc_synapse_type)
 print('\np1_to_p2: ')
 connections['p1_to_p2']	= Projection(pattern1, 		pattern2, 		fpc, 	exc_synapse_type)
 print('\np1_to_pi: ')
-connections['p1_to_pi']	= Projection(pattern1, 		patternIntersection, 	fpc, 	pattern_synapse_type)
+connections['p1_to_pi']	= Projection(pattern1, 		patternIntersection, 	fpc, 	exc_synapse_type)
 print('\np1_to_c: ')
 connections['p1_to_c'] 	= Projection(pattern1, 		controlPopulation, 	fpc, 	exc_synapse_type)
 print('\np1_to_i: ')
@@ -193,9 +237,9 @@ connections['p2_to_e'] 	= Projection(pattern2, 		excPopulation, 		fpc, 	exc_syna
 print('\np2_to_p1: ')
 connections['p2_to_p1']	= Projection(pattern2, 		pattern1, 		fpc, 	exc_synapse_type)
 print('\np2_to_p2: ')
-connections['p2_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	pattern_synapse_type)
+connections['p2_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	exc_synapse_type)
 print('\np2_to_pi: ')
-connections['p2_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	pattern_synapse_type)
+connections['p2_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	exc_synapse_type)
 print('\np2_to_c: ')
 connections['p2_to_c'] 	= Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type)
 print('\np2_to_i: ')
@@ -205,11 +249,11 @@ connections['p2_to_i'] 	= Projection(pattern2, 		inhibPopulation, 	fpc, 	exc_syn
 print('\npi_to_e: ')
 connections['pi_to_e'] 	= Projection(pattern2, 		excPopulation, 		fpc, 	exc_synapse_type)
 print('\npi_to_p1: ')
-connections['pi_to_p1']	= Projection(pattern2, 		pattern1, 		fpc, 	pattern_synapse_type)
+connections['pi_to_p1']	= Projection(pattern2, 		pattern1, 		fpc, 	exc_synapse_type)
 print('\npi_to_p2: ')
-connections['pi_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	pattern_synapse_type)
+connections['pi_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	exc_synapse_type)
 print('\npi_to_pi: ')
-connections['pi_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	pattern_synapse_type)
+connections['pi_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	exc_synapse_type)
 print('\npi_to_c: ')
 connections['pi_to_c'] 	= Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type)
 print('\npi_to_i: ')
@@ -253,7 +297,7 @@ connections['i_to_i'] 	= Projection(inhibPopulation, 	inhibPopulation, 	fpc, 	in
 
 
 
-### SIMULATION TIMES WERE DOWNSCALED 10000 TIMES FOR TESTING PURPOSES
+
 
 
 ## Start
@@ -273,15 +317,17 @@ inhibPopulation.record('spikes')
 
 buildCPUTime = timer.diff()
 
-print("\n\nbuildCPUTime: %s" %buildCPUTime)
+print("\n\nTime to build the network: %s seconds" %buildCPUTime)
 
-print("\nPre-simulation")
+print("\n--- Pre-simulation ---")
+print("\nPre-simulation time: %s milliseconds" %timePreSim)
 
-run(60)
+
+run(timePreSim)
 
 simCPUTime_pre = timer.diff()
 
-print("\nsimCPUTime: %s" %simCPUTime_pre)
+print("\nTime to perform the pre-simulation: %s seconds" %simCPUTime_pre)
 
 excSpikes			= 	excPopulation.get_data('spikes', clear="true")
 pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
@@ -291,11 +337,14 @@ controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
 
-plt.subplot(4, 5, 1)
+plt.subplot(4, 6, 1)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 '''
-plt.subplot(4, 5, 6)
+plt.subplot(4, 6, 7)
 plotISICVHist(pattern1Spikes, 13, 'red')
+
+plt.subplot(4, 6, 13)
+plotISICVHist(subPopControlSpikes, 13, 'black')
 '''
 
 ## Fig. 4, A
@@ -305,7 +354,10 @@ plotISICVHist(pattern1Spikes, 13, 'red')
 ## 	Inhibitory plasticity is turned on.
 ## 	Original simulation time: 
 
-print("\nFig. 4, A")
+print("\n")
+print("--------------------------------------")
+print("Starting simulation to generate Fig. 4")
+print("--------------------------------------")
 
 subPopPattern1 = pattern1.sample(392)
 subPopControl = controlPopulation.sample(392)
@@ -333,29 +385,14 @@ connections['i_to_c'].set(eta=eta)
 
 
 
-run(10)
-print("10%")
-run(10)
-print("20%")
-run(10)
-print("30%")
-run(10)
-print("40%")
-run(10)
-print("50%")
-run(10)
-print("60%")
-run(10)
-print("70%")
-run(10)
-print("80%")
-run(10)
-print("90%")
-run(10)
-print("100%")
+print("\nSimulation time: %s milliseconds" %timeSimFig4A)
+
+run(timeSimFig4A)
 
 
 simCPUTime_4A = timer.diff()
+
+print("\nTime to perform the simulation: %s seconds" %simCPUTime_4A)
 
 
 excSpikes			= 	excPopulation.get_data('spikes', clear="true")
@@ -368,16 +405,15 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
 subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
+print("\nPloting Fig. 4A...")
 
-print("ploting Fig. 4A")
-
-plt.subplot(4, 5, 2)
+plt.subplot(4, 6, 2)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 '''
-plt.subplot(4, 5, 7)
+plt.subplot(4, 6, 8)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
-plt.subplot(4, 5, 12)
+plt.subplot(4, 6, 14)
 plotISICVHist(subPopControlSpikes, 13, 'black')
 '''
 
@@ -387,50 +423,36 @@ plotISICVHist(subPopControlSpikes, 13, 'black')
 ##	Original simulation time: 60 min (60 * 60 * 1000 ms)
 
 
-print("Continuing simulation...")
-
-run(26)
-print("10%")
-run(26)
-print("20%")
-run(26)
-print("30%")
-run(26)
-print("40%")
-run(26)
-print("50%")
-run(26)
-print("60%")
-run(26)
-print("70%")
-run(26)
-print("80%")
-run(26)
-print("90%")
-run(26)
-print("100%")
+print("\nContinuing simulation...")
 
 
-excSpikes			= 	excPopulation.get_data('spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
-pattern2Spikes 			=	pattern2.get_data('spikes', clear="true")
-patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
-inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
+print("\nSimulation time: %s milliseconds" %timeSimFig4B)
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
+run(timeSimFig4B)
 
+simCPUTime_4B = timer.diff()
 
-print("ploting Fig. 4B")
+print("\nTime to perform the simulation: %s seconds" %simCPUTime_4B)
 
-plt.subplot(4, 5, 3)
+excSpikes			= 	excPopulation.get_data('spikes', 	clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', 		clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', 		clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', 	clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', 	clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
+
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
+
+print("\nPloting Fig. 4B...")
+
+plt.subplot(4, 6, 3)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 '''
-plt.subplot(4, 5, 8)
+plt.subplot(4, 6, 9)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
-plt.subplot(4, 5, 13)
+plt.subplot(4, 6, 15)
 plotISICVHist(subPopControlSpikes, 13, 'black')
 '''
 
@@ -469,8 +491,16 @@ connections['pi_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
 connections['pi_to_c'].set(weight = weightExcSynapses * potentiationFactor)
 connections['pi_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
+print("\nContinuing simulation...")
 
-run(5)
+print("\nSimulation time: %s milliseconds" %timeSimFig4C)
+
+run(timeSimFig4C)
+
+simCPUTime_4C = timer.diff()
+
+print("\nTime to perform the simulation: %s seconds" %simCPUTime_4C)
+
 
 excSpikes			= 	excPopulation.get_data('spikes', clear="true")
 pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
@@ -482,19 +512,17 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
 subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
+print("Ploting Fig. 4C...")
 
-print("ploting Fig. 4C")
-
-plt.subplot(4, 5, 4)
+plt.subplot(4, 6, 4)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 '''
-plt.subplot(4, 5, 9)
+plt.subplot(4, 6, 10)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
-plt.subplot(4, 5, 14)
+plt.subplot(4, 6, 16)
 plotISICVHist(subPopControlSpikes, 13, 'black')
 '''
-
 
 
 
@@ -502,56 +530,122 @@ plotISICVHist(subPopControlSpikes, 13, 'black')
 ##
 ## 	Inhibitory plasticity has succesfully suppressed any elevated activity
 ## 	from the pattern and restored the global background state
-##	Original simulation time: 5 sec (5000 ms)
+##	Original simulation time: 60 min (60 * 60 * 1000 ms)
 
 
+print("\nContinuing simulation...")
 
-print("Continuing simulation...")
+print("\nSimulation time: %s milliseconds" %timeSimFig4D)
 
-run(35)
-print("10%")
-run(36)
-print("20%")
-run(36)
-print("30%")
-run(36)
-print("40%")
-run(36)
-print("50%")
-run(36)
-print("60%")
-run(36)
-print("70%")
-run(36)
-print("80%")
-run(36)
-print("90%")
-run(36)
-print("100%")
+run(timeSimFig4D)
 
-print("ploting Fig. 4D")
+simCPUTime_4D = timer.diff()
+
+print("\nTime to perform the simulation: %s seconds" %simCPUTime_4D)
+
+print("\nPloting Fig. 4D...")
 
 
-excSpikes			= 	excPopulation.get_data('spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data('spikes', clear="true")
-pattern2Spikes 			=	pattern2.get_data('spikes', clear="true")
-patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
-inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
+excSpikes			= 	excPopulation.get_data('spikes', 	clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', 		clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', 		clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', 	clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', 	clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 
-plt.subplot(4, 5, 5)
+plt.subplot(4, 6, 5)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 '''
-plt.subplot(4, 5, 10)
+plt.subplot(4, 6, 11)
 plotISICVHist(subPopPattern1Spikes, 13, 'red')
 
-plt.subplot(4, 5, 15)
+plt.subplot(4, 6, 17)
 plotISICVHist(subPopControlSpikes, 13, 'black')
 '''
+
+
+
+
+
+
+
+
+## Fig. 4, E
+##
+## 	By delivering an additional, 1 s long stimulus as described above to
+## 	25% of the cells within one memory pattern, the whole pattern is activated.
+## 	Activity inside the pattern stays asynchronous and irregular, and the rest
+## 	of the network, including the other pattern, ramains nearly unaffected
+##	Original simulation time: 5 sec (5000 ms)
+
+stimulus = Population(1000, SpikeSourcePoisson(rate=100.0))
+
+subPopPattern1Stim = pattern1.sample(180) # need to be disjoint of the analysed population 
+
+fpcStim 	= FixedProbabilityConnector(0.05, callback=progress_bar)
+
+connections['stim_to_subPopPattern1Stim'] 	= Projection(stimulus, 	subPopPattern1Stim, 		fpcStim, 	exc_synapse_type)
+
+print("\nContinuing simulation...")
+
+print("\nSimulation time: %s milliseconds" %timeSimFig4E_part1)
+
+run(timeSimFig4E_part1)
+
+simCPUTime_4E_part1 = timer.diff()
+
+print("\nTime to perform the simulation: %s seconds" %simCPUTime_4E_part1)
+
+
+connections['stim_to_subPopPattern1Stim'].set(weight = 0)
+
+
+print("\nContinuing simulation...")
+
+print("\nSimulation time: %s milliseconds" %timeSimFig4E_part2)
+
+run(timeSimFig4E_part2)
+
+simCPUTime_4E_part2 = timer.diff()
+
+print("\nTime to perform the simulation: %s seconds" %simCPUTime_4E_part2)
+
+print("\nploting Fig. 4E")
+
+
+excSpikes			= 	excPopulation.get_data('spikes', 	clear="true")
+pattern1Spikes 			=	pattern1.get_data('spikes', 		clear="true")
+pattern2Spikes 			=	pattern2.get_data('spikes', 		clear="true")
+patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', 	clear="true")
+controlSpikes 			=	controlPopulation.get_data('spikes', 	clear="true")
+inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
+
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
+
+
+plt.subplot(4, 6, 6)
+plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+'''
+plt.subplot(4, 6, 12)
+plotISICVHist(subPopPattern1Spikes, 13, 'red')
+
+plt.subplot(4, 6, 18)
+plotISICVHist(subPopControlSpikes, 13, 'black')
+'''
+
+
+totalSimulatedTime = timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + timeSimFig4D + timeSimFig4E_part1 + timeSimFig4E_part2
+
+print("\nTotal simulated time: %s milliseconds" %totalSimulatedTime)
+
+totalCPUTime = simCPUTime_pre + simCPUTime_4A + simCPUTime_4B + simCPUTime_4C + simCPUTime_4D + simCPUTime_4E_part1 + simCPUTime_4E_part2
+
+print("\nTotal CPU time: %s seconds" %totalCPUTime)
 
 plt.show()
 
