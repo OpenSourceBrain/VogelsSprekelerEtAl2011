@@ -95,7 +95,15 @@ def calculateISICV2 (neuronSpikes):
 		return np.std(neuronISIs) / np.mean(neuronISIs)
 
 
-def plotISICVHist(popSpikes, numOfNeurons, barColor):
+
+def plotRaster(popSpikes, color):
+	seg = popSpikes.segments[0]
+	for spiketrain in seg.spiketrains:
+		y = np.ones_like(spiketrain) * spiketrain.annotations['source_id']
+		plt.plot(spiketrain, y, '.')
+
+
+def plotISICVHist(popSpikes, barColor):
 	seg = popSpikes.segments[0]
 	allSpikes = seg.spiketrains
 	isiCVs = np.zeros(0)
@@ -103,7 +111,8 @@ def plotISICVHist(popSpikes, numOfNeurons, barColor):
 		neuronISICV = calculateISICV2(neuronSpikes)
 		if neuronISICV != -1:
 			isiCVs = np.append(isiCVs, neuronISICV)
-	plt.hist(isiCVs, color=barColor)
+	if np.size(isiCVs) != 0:	
+		plt.hist(isiCVs, color=barColor)
 	plt.ylabel('Percent [%]')
 	plt.xlabel('ISI CV')
 	plt.ylim((0, 100))
@@ -190,9 +199,9 @@ def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, cont
 		j = range(100)
 		plt.scatter(i*np.ones(100), j, c=grid[i, :], hold="true")
 	'''
-	plt.imshow(grid, cmap=plt.cm.afmhot)
-	plt.colorbar()
-	
+	##plt.imshow(grid, cmap=plt.cm.afmhot)
+	im = plt.imshow(grid, vmin=0, vmax=200)
+	return im
 
 
 

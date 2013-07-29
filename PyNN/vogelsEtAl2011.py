@@ -68,9 +68,7 @@ i_offset 	= 0.2	# [nA]
 
 
 
-
-#eta = 1e-4
-eta = 1e-1 # changed to speed up simulation
+eta = 1e-4
 eta = weightInhibToInhibSynapses * eta  # weight of inhibitory to excitatory synapses
 rho = 0.003
 
@@ -110,8 +108,10 @@ timeSimFig4E_part2 = 4000		# 5 sec (5000 ms)
 
 ### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
 
-downscaleFactor = 5000
+downscaleFactor = 50000
 minSimTime = 1
+
+eta = eta * downscaleFactor
 
 timePreSim 	= int(round(timePreSim/downscaleFactor))
 timeSimFig4A 	= int(round(timeSimFig4A/downscaleFactor))
@@ -154,6 +154,11 @@ pattern2 		= Population(numOfNeuronsPattern2		, cell_type, label='pattern2')
 patternIntersection 	= Population(numOfNeuronsPatternIntersection	, cell_type, label='patternIntersection')
 
 controlPopulation	= Population(numOfNeuronsControl		, cell_type, label='controlPop')
+
+
+subPopPattern1 = pattern1.sample(392)
+subPopControl = controlPopulation.sample(392)
+
 
 print("-> DONE")
 print("----------------------------------------------------------------------")
@@ -336,16 +341,20 @@ patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true"
 controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
+subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
+
+fig = plt.figure(1)
 
 plt.subplot(4, 6, 1)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-'''
+
 plt.subplot(4, 6, 7)
-plotISICVHist(pattern1Spikes, 13, 'red')
+plotRaster(pattern1Spikes, 'red')
 
 plt.subplot(4, 6, 13)
-plotISICVHist(subPopControlSpikes, 13, 'black')
-'''
+plotISICVHist(subPopPattern1Spikes, 'red')
+
 
 ## Fig. 4, A
 ##
@@ -359,8 +368,7 @@ print("--------------------------------------")
 print("Starting simulation to generate Fig. 4")
 print("--------------------------------------")
 
-subPopPattern1 = pattern1.sample(392)
-subPopControl = controlPopulation.sample(392)
+
 
 excPopulation.record('spikes')
 pattern1.record('spikes')
@@ -409,13 +417,13 @@ print("\nPloting Fig. 4A...")
 
 plt.subplot(4, 6, 2)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-'''
+
 plt.subplot(4, 6, 8)
-plotISICVHist(subPopPattern1Spikes, 13, 'red')
+plotRaster(subPopPattern1Spikes, 'red')
 
 plt.subplot(4, 6, 14)
-plotISICVHist(subPopControlSpikes, 13, 'black')
-'''
+plotISICVHist(subPopPattern1Spikes, 'red')
+
 
 ## Fig. 4, B
 ##
@@ -448,13 +456,12 @@ print("\nPloting Fig. 4B...")
 
 plt.subplot(4, 6, 3)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-'''
+
 plt.subplot(4, 6, 9)
-plotISICVHist(subPopPattern1Spikes, 13, 'red')
+plotRaster(subPopPattern1Spikes, 'red')
 
 plt.subplot(4, 6, 15)
-plotISICVHist(subPopControlSpikes, 13, 'black')
-'''
+plotISICVHist(subPopPattern1Spikes, 'red')
 
 
 
@@ -467,14 +474,13 @@ plotISICVHist(subPopControlSpikes, 13, 'black')
 ##	Original simulation time: 5 sec (5000 ms)
 
 
+
 connections['p1_to_e'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_c'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_i'].set(weight = weightExcSynapses * potentiationFactor)
-
-
 
 
 connections['p2_to_e'].set(weight = weightExcSynapses * potentiationFactor)
@@ -513,17 +519,17 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
 subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
-print("Ploting Fig. 4C...")
+print("\nPloting Fig. 4C...")
 
 plt.subplot(4, 6, 4)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-'''
+
 plt.subplot(4, 6, 10)
-plotISICVHist(subPopPattern1Spikes, 13, 'red')
+plotRaster(subPopPattern1Spikes, 'red')
 
 plt.subplot(4, 6, 16)
-plotISICVHist(subPopControlSpikes, 13, 'black')
-'''
+plotISICVHist(subPopPattern1Spikes, 'red')
+
 
 
 
@@ -560,13 +566,12 @@ subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 plt.subplot(4, 6, 5)
 plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-'''
+
 plt.subplot(4, 6, 11)
-plotISICVHist(subPopPattern1Spikes, 13, 'red')
+plotRaster(subPopPattern1Spikes, 'red')
 
 plt.subplot(4, 6, 17)
-plotISICVHist(subPopControlSpikes, 13, 'black')
-'''
+plotISICVHist(subPopPattern1Spikes, 'red')
 
 
 
@@ -630,14 +635,14 @@ subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 
 plt.subplot(4, 6, 6)
-plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-'''
+im = plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+
 plt.subplot(4, 6, 12)
-plotISICVHist(subPopPattern1Spikes, 13, 'red')
+plotRaster(subPopPattern1Spikes, 'red')
 
 plt.subplot(4, 6, 18)
-plotISICVHist(subPopControlSpikes, 13, 'black')
-'''
+plotISICVHist(subPopPattern1Spikes, 'red')
+
 
 
 totalSimulatedTime = timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + timeSimFig4D + timeSimFig4E_part1 + timeSimFig4E_part2
@@ -647,6 +652,12 @@ print("\nTotal simulated time: %s milliseconds" %totalSimulatedTime)
 totalCPUTime = simCPUTime_pre + simCPUTime_4A + simCPUTime_4B + simCPUTime_4C + simCPUTime_4D + simCPUTime_4E_part1 + simCPUTime_4E_part2
 
 print("\nTotal CPU time: %s seconds" %totalCPUTime)
+
+#fig.subplots_adjust(left=0.8)
+cbar_ax = fig.add_axes([0.0, 0.8, 0.03, 0.2])
+cb = fig.colorbar(im, cax=cbar_ax, cmap=plt.cm.afmhot)
+
+#plt.colorbar()
 
 plt.show()
 
