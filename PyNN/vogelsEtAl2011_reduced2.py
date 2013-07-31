@@ -48,13 +48,13 @@ numOfNeuronsInhibPopulation = 2000
 
 # Reducing to speed up simulation
 
-numOfNeuronsExcPopulation = 57
-numOfNeuronsPattern1 = 5
-numOfNeuronsPattern2 = 5
-numOfNeuronsPatternIntersection = 4
-numOfNeuronsControl = 9
+numOfNeuronsExcPopulation = 228
+numOfNeuronsPattern1 = 20
+numOfNeuronsPattern2 = 20
+numOfNeuronsPatternIntersection = 16
+numOfNeuronsControl = 36
 
-numOfNeuronsInhibPopulation = 20
+numOfNeuronsInhibPopulation = 80
 
 
 connectivity = 0.02
@@ -83,6 +83,7 @@ i_offset 	= 0.2	# [nA]
 eta = 1e-4
 eta = weightInhibToInhibSynapses * eta  # weight of inhibitory to excitatory synapses
 rho = 0.003
+
 
 
 synapseDelay = 0.5 # [ms]
@@ -121,8 +122,8 @@ timeSimFig4E_part2 = 4000		# 5 sec (5000 ms)
 
 ### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
 
-downscaleFactor = 1000
-minSimTime = 1000 #[ms]
+downscaleFactor = 100
+minSimTime = 500 #[ms]
 
 eta = eta * downscaleFactor
 
@@ -389,7 +390,7 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 fig = plt.figure(1)
 
 plt.subplot(4, 6, 1)
-plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 7)
 plotRaster(pattern1Spikes, 'red')
@@ -484,7 +485,7 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 print("\nPloting Fig. 4A...")
 
 plt.subplot(4, 6, 2)
-plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 8)
 plotRaster(pattern1Spikes, 'red')
@@ -548,7 +549,7 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 print("\nPloting Fig. 4B...")
 
 plt.subplot(4, 6, 3)
-plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 9)
 plotRaster(pattern1Spikes, 'red')
@@ -641,7 +642,7 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 print("\nPloting Fig. 4C...")
 
 plt.subplot(4, 6, 4)
-plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 10)
 plotRaster(pattern1Spikes, 'red')
@@ -708,7 +709,7 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 
 
 plt.subplot(4, 6, 5)
-plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 11)
 plotRaster(pattern1Spikes, 'red')
@@ -848,7 +849,7 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 
 
 plt.subplot(4, 6, 6)
-im = plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+im = plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 12)
 plotRaster(pattern1Spikes, 'red')

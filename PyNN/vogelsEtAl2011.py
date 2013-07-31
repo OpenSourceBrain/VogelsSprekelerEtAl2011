@@ -46,7 +46,19 @@ numOfNeuronsControl = 784
 numOfNeuronsInhibPopulation = 2000
 
 
-connectivity = 0.02
+# Reducing to speed up simulation
+
+numOfNeuronsExcPopulation = 57
+numOfNeuronsPattern1 = 5
+numOfNeuronsPattern2 = 5
+numOfNeuronsPatternIntersection = 4
+numOfNeuronsControl = 9
+
+numOfNeuronsInhibPopulation = 20
+
+
+#connectivity = 0.02
+connectivity = 0.05
 weightExcSynapses = 0.003 		# [uS]
 weightInhibToInhibSynapses = 0.03 	# [uS]
 potentiationFactor = 5
@@ -109,10 +121,10 @@ timeSimFig4E_part2 = 4000		# 5 sec (5000 ms)
 
 ### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
 
-downscaleFactor = 10000
+downscaleFactor = 100
 minSimTime = 1 #[ms]
 
-eta = eta * downscaleFactor
+#eta = eta * downscaleFactor
 
 timePreSim 	= int(round(timePreSim/downscaleFactor))
 timeSimFig4A 	= int(round(timeSimFig4A/downscaleFactor))
@@ -157,8 +169,8 @@ patternIntersection 	= Population(numOfNeuronsPatternIntersection	, cell_type, l
 controlPopulation	= Population(numOfNeuronsControl		, cell_type, label='controlPop')
 
 
-subPopPattern1 = pattern1.sample(392)
-subPopControl = controlPopulation.sample(392)
+#subPopPattern1 = pattern1.sample(392)
+#subPopControl = controlPopulation.sample(392)
 
 
 print("-> DONE")
@@ -211,73 +223,73 @@ print("-----------------------------------------------")
 connections={}
 
 print('\ne_to_e: ')
-connections['e_to_e'] 	= Projection(excPopulation, 	excPopulation, 		fpc, 	exc_synapse_type)
+connections['e_to_e'] 	= Projection(excPopulation, 	excPopulation, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\ne_to_p1: ')
-connections['e_to_p1'] 	= Projection(excPopulation, 	pattern1, 		fpc, 	exc_synapse_type)
+connections['e_to_p1'] 	= Projection(excPopulation, 	pattern1, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\ne_to_p2: ')
-connections['e_to_p2']	= Projection(excPopulation, 	pattern2, 		fpc, 	exc_synapse_type)
+connections['e_to_p2']	= Projection(excPopulation, 	pattern2, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\ne_to_pi: ')
-connections['e_to_pi'] 	= Projection(excPopulation, 	patternIntersection, 	fpc, 	exc_synapse_type)
+connections['e_to_pi'] 	= Projection(excPopulation, 	patternIntersection, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\ne_to_c: ')
-connections['e_to_c'] 	= Projection(excPopulation, 	controlPopulation, 	fpc, 	exc_synapse_type)
+connections['e_to_c'] 	= Projection(excPopulation, 	controlPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\ne_to_i: ')
-connections['e_to_i'] 	= Projection(excPopulation, 	inhibPopulation, 	fpc, 	exc_synapse_type)
+connections['e_to_i'] 	= Projection(excPopulation, 	inhibPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 
 
 print('\np1_to_e: ')
-connections['p1_to_e'] 	= Projection(pattern1, 		excPopulation, 		fpc, 	exc_synapse_type)
+connections['p1_to_e'] 	= Projection(pattern1, 		excPopulation, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np1_to_p1: ')
-connections['p1_to_p1']	= Projection(pattern1, 		pattern1, 		fpc, 	exc_synapse_type)
+connections['p1_to_p1']	= Projection(pattern1, 		pattern1, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np1_to_p2: ')
-connections['p1_to_p2']	= Projection(pattern1, 		pattern2, 		fpc, 	exc_synapse_type)
+connections['p1_to_p2']	= Projection(pattern1, 		pattern2, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np1_to_pi: ')
-connections['p1_to_pi']	= Projection(pattern1, 		patternIntersection, 	fpc, 	exc_synapse_type)
+connections['p1_to_pi']	= Projection(pattern1, 		patternIntersection, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np1_to_c: ')
-connections['p1_to_c'] 	= Projection(pattern1, 		controlPopulation, 	fpc, 	exc_synapse_type)
+connections['p1_to_c'] 	= Projection(pattern1, 		controlPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np1_to_i: ')
-connections['p1_to_i'] 	= Projection(pattern1, 		inhibPopulation, 	fpc, 	exc_synapse_type)
+connections['p1_to_i'] 	= Projection(pattern1, 		inhibPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 
 
 print('\np2_to_e: ')
-connections['p2_to_e'] 	= Projection(pattern2, 		excPopulation, 		fpc, 	exc_synapse_type)
+connections['p2_to_e'] 	= Projection(pattern2, 		excPopulation, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np2_to_p1: ')
-connections['p2_to_p1']	= Projection(pattern2, 		pattern1, 		fpc, 	exc_synapse_type)
+connections['p2_to_p1']	= Projection(pattern2, 		pattern1, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np2_to_p2: ')
-connections['p2_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	exc_synapse_type)
+connections['p2_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np2_to_pi: ')
-connections['p2_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	exc_synapse_type)
+connections['p2_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np2_to_c: ')
-connections['p2_to_c'] 	= Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type)
+connections['p2_to_c'] 	= Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\np2_to_i: ')
-connections['p2_to_i'] 	= Projection(pattern2, 		inhibPopulation, 	fpc, 	exc_synapse_type)
+connections['p2_to_i'] 	= Projection(pattern2, 		inhibPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 
 
 print('\npi_to_e: ')
-connections['pi_to_e'] 	= Projection(pattern2, 		excPopulation, 		fpc, 	exc_synapse_type)
+connections['pi_to_e'] 	= Projection(pattern2, 		excPopulation, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\npi_to_p1: ')
-connections['pi_to_p1']	= Projection(pattern2, 		pattern1, 		fpc, 	exc_synapse_type)
+connections['pi_to_p1']	= Projection(pattern2, 		pattern1, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\npi_to_p2: ')
-connections['pi_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	exc_synapse_type)
+connections['pi_to_p2']	= Projection(pattern2, 		pattern2, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\npi_to_pi: ')
-connections['pi_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	exc_synapse_type)
+connections['pi_to_pi']	= Projection(pattern2, 		patternIntersection, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\npi_to_c: ')
-connections['pi_to_c'] 	= Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type)
+connections['pi_to_c'] 	= Projection(pattern2, 		controlPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\npi_to_i: ')
-connections['pi_to_i'] 	= Projection(pattern2, 		inhibPopulation, 	fpc, 	exc_synapse_type)
+connections['pi_to_i'] 	= Projection(pattern2, 		inhibPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 
 
 print('\nc_to_e: ')
-connections['c_to_e'] 	= Projection(controlPopulation, excPopulation, 		fpc, 	exc_synapse_type)
+connections['c_to_e'] 	= Projection(controlPopulation, excPopulation, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\nc_to_p1: ')
-connections['c_to_p1'] 	= Projection(controlPopulation, pattern1, 		fpc, 	exc_synapse_type)
+connections['c_to_p1'] 	= Projection(controlPopulation, pattern1, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\nc_to_p2: ')
-connections['c_to_p2'] 	= Projection(controlPopulation, pattern2, 		fpc, 	exc_synapse_type)
+connections['c_to_p2'] 	= Projection(controlPopulation, pattern2, 		fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\nc_to_pi: ')
-connections['c_to_pi'] 	= Projection(controlPopulation, patternIntersection, 	fpc, 	exc_synapse_type)
+connections['c_to_pi'] 	= Projection(controlPopulation, patternIntersection, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\nc_to_c: ')
-connections['c_to_c'] 	= Projection(controlPopulation, controlPopulation, 	fpc, 	exc_synapse_type)
+connections['c_to_c'] 	= Projection(controlPopulation, controlPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 print('\nc_to_i: ')
-connections['c_to_i'] 	= Projection(controlPopulation, inhibPopulation, 	fpc, 	exc_synapse_type)
+connections['c_to_i'] 	= Projection(controlPopulation, inhibPopulation, 	fpc, 	exc_synapse_type, receptor_type='excitatory')
 
 print("\n")
 print("-----------------------------------------------")
@@ -285,17 +297,17 @@ print("------- Creating inhibitory projections -------")
 print("-----------------------------------------------")
 
 print('i_to_e: ')
-connections['i_to_e'] 	= Projection(inhibPopulation, 	excPopulation, 		fpc, 	inhibitory_stdp_synapse_type)
+connections['i_to_e'] 	= Projection(inhibPopulation, 	excPopulation, 		fpc, 	inhibitory_stdp_synapse_type, receptor_type='inhibitory')
 print('\ni_to_p1: ')
-connections['i_to_p1'] 	= Projection(inhibPopulation, 	pattern1, 		fpc, 	inhibitory_stdp_synapse_type)
+connections['i_to_p1'] 	= Projection(inhibPopulation, 	pattern1, 		fpc, 	inhibitory_stdp_synapse_type, receptor_type='inhibitory')
 print('\ni_to_p2: ')
-connections['i_to_p2'] 	= Projection(inhibPopulation, 	pattern2, 		fpc, 	inhibitory_stdp_synapse_type)
+connections['i_to_p2'] 	= Projection(inhibPopulation, 	pattern2, 		fpc, 	inhibitory_stdp_synapse_type, receptor_type='inhibitory')
 print('\ni_to_pi: ')
-connections['i_to_pi'] 	= Projection(inhibPopulation, 	patternIntersection, 	fpc, 	inhibitory_stdp_synapse_type)
+connections['i_to_pi'] 	= Projection(inhibPopulation, 	patternIntersection, 	fpc, 	inhibitory_stdp_synapse_type, receptor_type='inhibitory')
 print('\ni_to_c: ')
-connections['i_to_c'] 	= Projection(inhibPopulation, 	controlPopulation, 	fpc, 	inhibitory_stdp_synapse_type)
+connections['i_to_c'] 	= Projection(inhibPopulation, 	controlPopulation, 	fpc, 	inhibitory_stdp_synapse_type, receptor_type='inhibitory')
 print('\ni_to_i: ')
-connections['i_to_i'] 	= Projection(inhibPopulation, 	inhibPopulation, 	fpc, 	inhibitory_stdp_synapse_type) # "eta" should be always zero
+connections['i_to_i'] 	= Projection(inhibPopulation, 	inhibPopulation, 	fpc, 	inhibitory_stdp_synapse_type, receptor_type='inhibitory') # "eta" should be always zero
 
 
 
@@ -319,8 +331,8 @@ patternIntersection.record('spikes')
 controlPopulation.record('spikes')
 inhibPopulation.record('spikes')
 
-subPopPattern1.record('spikes')
-subPopControl.record('spikes')
+#subPopPattern1.record('spikes')
+#subPopControl.record('spikes')
 
 
 buildCPUTime = timer.diff()
@@ -333,6 +345,33 @@ print("\nPre-simulation time: %s milliseconds" %timePreSim)
 
 run(timePreSim)
 
+
+
+
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+
+
+
+
 simCPUTime_pre = timer.diff()
 
 print("\nTime to perform the pre-simulation: %s seconds" %simCPUTime_pre)
@@ -344,13 +383,13 @@ patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true"
 controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
+#subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+#subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
 fig = plt.figure(1)
 
 plt.subplot(4, 6, 1)
-plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 7)
 plotRaster(pattern1Spikes, 'red')
@@ -401,6 +440,32 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4A)
 run(timeSimFig4A)
 
 
+
+
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+
+
+
+
 simCPUTime_4A = timer.diff()
 
 print("\nTime to perform the simulation: %s seconds" %simCPUTime_4A)
@@ -413,13 +478,13 @@ patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true"
 controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
+#subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+#subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
 print("\nPloting Fig. 4A...")
 
 plt.subplot(4, 6, 2)
-plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 8)
 plotRaster(pattern1Spikes, 'red')
@@ -441,6 +506,31 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4B)
 
 run(timeSimFig4B)
 
+
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+
+
+
+
 simCPUTime_4B = timer.diff()
 
 print("\nTime to perform the simulation: %s seconds" %simCPUTime_4B)
@@ -452,19 +542,19 @@ patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', 	clear="true
 controlSpikes 			=	controlPopulation.get_data('spikes', 	clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
+#subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
+#subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 print("\nPloting Fig. 4B...")
 
 plt.subplot(4, 6, 3)
-plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 9)
-plotRaster(subPopPattern1Spikes, 'red')
+plotRaster(pattern1Spikes, 'red')
 
 plt.subplot(4, 6, 15)
-plotISICVHist(subPopPattern1Spikes, 'red')
+plotISICVHist(pattern1Spikes, 'red')
 
 
 
@@ -507,6 +597,32 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4C)
 
 run(timeSimFig4C)
 
+
+
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+
+
+
+
 simCPUTime_4C = timer.diff()
 
 print("\nTime to perform the simulation: %s seconds" %simCPUTime_4C)
@@ -519,19 +635,19 @@ patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', clear="true"
 controlSpikes 			=	controlPopulation.get_data('spikes', clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
+#subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', clear="true")
+#subPopControlSpikes 		= 	subPopControl.get_data('spikes', clear="true")
 
 print("\nPloting Fig. 4C...")
 
 plt.subplot(4, 6, 4)
-plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 10)
-plotRaster(subPopPattern1Spikes, 'red')
+plotRaster(pattern1Spikes, 'red')
 
 plt.subplot(4, 6, 16)
-plotISICVHist(subPopPattern1Spikes, 'red')
+plotISICVHist(pattern1Spikes, 'red')
 
 
 
@@ -549,6 +665,30 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4D)
 
 run(timeSimFig4D)
 
+
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+
+
+
 simCPUTime_4D = timer.diff()
 
 print("\nTime to perform the simulation: %s seconds" %simCPUTime_4D)
@@ -563,18 +703,18 @@ patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', 	clear="true
 controlSpikes 			=	controlPopulation.get_data('spikes', 	clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
+#subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
+#subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 
 plt.subplot(4, 6, 5)
-plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 11)
-plotRaster(subPopPattern1Spikes, 'red')
+plotRaster(pattern1Spikes, 'red')
 
 plt.subplot(4, 6, 17)
-plotISICVHist(subPopPattern1Spikes, 'red')
+plotISICVHist(pattern1Spikes, 'red')
 
 
 
@@ -593,11 +733,21 @@ plotISICVHist(subPopPattern1Spikes, 'red')
 
 stimulus = Population(1000, SpikeSourcePoisson(rate=100.0))
 
+'''
 subPopPattern1Stim = pattern1.sample(180) # need to be disjoint of the analysed population 
 
 fpcStim 	= FixedProbabilityConnector(0.05, callback=progress_bar)
 
 connections['stim_to_subPopPattern1Stim'] 	= Projection(stimulus, 	subPopPattern1Stim, 		fpcStim, 	exc_synapse_type)
+'''
+
+
+
+fpcStim 	= FixedProbabilityConnector(0.05, callback=progress_bar)
+
+connections['stim_to_pattern1'] 	= Projection(stimulus, 	pattern1, 		fpcStim, 	exc_synapse_type, receptor_type='excitatory')
+
+
 
 print("\nContinuing simulation...")
 
@@ -605,12 +755,43 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4E_part1)
 
 run(timeSimFig4E_part1)
 
+
+print("\n\nWEIGHT: connections['stim_to_pattern1']: ")
+print connections['stim_to_pattern1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+
+
+
+
 simCPUTime_4E_part1 = timer.diff()
 
 print("\nTime to perform the simulation: %s seconds" %simCPUTime_4E_part1)
 
-
+'''
 connections['stim_to_subPopPattern1Stim'].set(weight = 0)
+'''
+
+connections['stim_to_pattern1'].set(weight = 0)
 
 
 print("\nContinuing simulation...")
@@ -618,6 +799,35 @@ print("\nContinuing simulation...")
 print("\nSimulation time: %s milliseconds" %timeSimFig4E_part2)
 
 run(timeSimFig4E_part2)
+
+
+
+print("\n\nWEIGHT: connections['stim_to_pattern1']: ")
+print connections['stim_to_pattern1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+
+
+
 
 simCPUTime_4E_part2 = timer.diff()
 
@@ -633,18 +843,18 @@ patternIntersectionSpikes 	=	patternIntersection.get_data('spikes', 	clear="true
 controlSpikes 			=	controlPopulation.get_data('spikes', 	clear="true")
 inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 
-subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
-subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
+#subPopPattern1Spikes 		=	subPopPattern1.get_data('spikes', 	clear="true")
+#subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 
 plt.subplot(4, 6, 6)
-im = plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+im = plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 plt.subplot(4, 6, 12)
-plotRaster(subPopPattern1Spikes, 'red')
+plotRaster(pattern1Spikes, 'red')
 
 plt.subplot(4, 6, 18)
-plotISICVHist(subPopPattern1Spikes, 'red')
+plotISICVHist(pattern1Spikes, 'red')
 
 
 
