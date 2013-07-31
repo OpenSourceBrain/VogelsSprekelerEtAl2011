@@ -198,7 +198,7 @@ def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, cont
 		plt.scatter(i*np.ones(100), j, c=grid[i, :], hold="true")
 	'''
 	##plt.imshow(grid, cmap=plt.cm.afmhot)
-	im = plt.imshow(grid, vmin=0, vmax=300)
+	im = plt.imshow(grid, vmin=0, vmax=200, interpolation='none')
 	return im
 
 

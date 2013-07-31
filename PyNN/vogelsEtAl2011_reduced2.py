@@ -24,6 +24,7 @@ Adapted from:
 from pyNN.random import RandomDistribution, NumpyRNG
 from pyNN.utility import get_script_args, Timer, ProgressBar, init_logging, normalized_filename
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 from auxRoutines import *
 
 simulator_name = get_script_args(1)[0]  
@@ -57,10 +58,10 @@ numOfNeuronsControl = 36
 numOfNeuronsInhibPopulation = 80
 
 
-connectivity = 0.02
+connectivity = 0.05
 weightExcSynapses = 0.003 		# [uS]
 weightInhibToInhibSynapses = 0.03 	# [uS]
-potentiationFactor = 5
+potentiationFactor = 50
 
 setup(timestep=0.1, min_delay=0.5)
 
@@ -122,7 +123,7 @@ timeSimFig4E_part2 = 4000		# 5 sec (5000 ms)
 
 ### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
 
-downscaleFactor = 100
+downscaleFactor = 1000
 minSimTime = 500 #[ms]
 
 eta = eta * downscaleFactor
@@ -348,16 +349,16 @@ run(timePreSim)
 
 
 
-
+'''
 print("\n\nWEIGHT: connections['e_to_e']: ")
 print connections['e_to_e'].get('weight', format='list')
-
+'''
 print("\n\nWEIGHT: connections['p1_to_p1']: ")
 print connections['p1_to_p1'].get('weight', format='list')
 
 print("\n\nWEIGHT: connections['p2_to_p2']: ")
 print connections['p2_to_p2'].get('weight', format='list')
-
+'''
 print("\n\nETA: connections['i_to_e']:")
 print connections['i_to_e'].get('eta', format='list')
 
@@ -369,7 +370,7 @@ print connections['i_to_i'].get('eta', format='list')
 
 print("\n\nWEIGHT: connections['i_to_i']: ")
 print connections['i_to_i'].get('weight', format='list')
-
+'''
 
 
 
@@ -389,13 +390,15 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
 fig = plt.figure(1)
 
-plt.subplot(4, 6, 1)
+ax1 = fig.add_subplot(4, 6, 1)
 plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
-plt.subplot(4, 6, 7)
+ax1.set_title('pre')
+
+ax2 = fig.add_subplot(4, 6, 7)
 plotRaster(pattern1Spikes, 'red')
 
-plt.subplot(4, 6, 13)
+ax3 = fig.add_subplot(4, 6, 13)
 plotISICVHist(pattern1Spikes, 'red')
 
 
@@ -442,16 +445,16 @@ run(timeSimFig4A)
 
 
 
-
+'''
 print("\n\nWEIGHT: connections['e_to_e']: ")
 print connections['e_to_e'].get('weight', format='list')
-
+'''
 print("\n\nWEIGHT: connections['p1_to_p1']: ")
 print connections['p1_to_p1'].get('weight', format='list')
 
 print("\n\nWEIGHT: connections['p2_to_p2']: ")
 print connections['p2_to_p2'].get('weight', format='list')
-
+'''
 print("\n\nETA: connections['i_to_e']:")
 print connections['i_to_e'].get('eta', format='list')
 
@@ -463,7 +466,7 @@ print connections['i_to_i'].get('eta', format='list')
 
 print("\n\nWEIGHT: connections['i_to_i']: ")
 print connections['i_to_i'].get('weight', format='list')
-
+'''
 
 
 
@@ -484,13 +487,15 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
 print("\nPloting Fig. 4A...")
 
-plt.subplot(4, 6, 2)
+ax4 = fig.add_subplot(4, 6, 2)
 plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
-plt.subplot(4, 6, 8)
+ax4.set_title('A')
+
+ax5 = fig.add_subplot(4, 6, 8)
 plotRaster(pattern1Spikes, 'red')
 
-plt.subplot(4, 6, 14)
+ax6 = fig.add_subplot(4, 6, 14)
 plotISICVHist(pattern1Spikes, 'red')
 
 
@@ -548,13 +553,15 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 
 print("\nPloting Fig. 4B...")
 
-plt.subplot(4, 6, 3)
+ax7 = fig.add_subplot(4, 6, 3)
 plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
-plt.subplot(4, 6, 9)
+ax7.set_title('B')
+
+ax8 = fig.add_subplot(4, 6, 9)
 plotRaster(pattern1Spikes, 'red')
 
-plt.subplot(4, 6, 15)
+ax9 = fig.add_subplot(4, 6, 15)
 plotISICVHist(pattern1Spikes, 'red')
 
 
@@ -569,28 +576,18 @@ plotISICVHist(pattern1Spikes, 'red')
 
 
 
-connections['p1_to_e'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
-connections['p1_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p1_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
-connections['p1_to_c'].set(weight = weightExcSynapses * potentiationFactor)
-connections['p1_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
 
-connections['p2_to_e'].set(weight = weightExcSynapses * potentiationFactor)
-connections['p2_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p2_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
 connections['p2_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
-connections['p2_to_c'].set(weight = weightExcSynapses * potentiationFactor)
-connections['p2_to_i'].set(weight = weightExcSynapses * potentiationFactor)
 
 
-connections['pi_to_e'].set(weight = weightExcSynapses * potentiationFactor)
 connections['pi_to_p1'].set(weight = weightExcSynapses * potentiationFactor)
 connections['pi_to_p2'].set(weight = weightExcSynapses * potentiationFactor)
 connections['pi_to_pi'].set(weight = weightExcSynapses * potentiationFactor)
-connections['pi_to_c'].set(weight = weightExcSynapses * potentiationFactor)
-connections['pi_to_i'].set(weight = weightExcSynapses * potentiationFactor)
+
 
 print("\nContinuing simulation...")
 
@@ -602,13 +599,13 @@ run(timeSimFig4C)
 '''
 print("\n\nWEIGHT: connections['e_to_e']: ")
 print connections['e_to_e'].get('weight', format='list')
-
+'''
 print("\n\nWEIGHT: connections['p1_to_p1']: ")
 print connections['p1_to_p1'].get('weight', format='list')
 
 print("\n\nWEIGHT: connections['p2_to_p2']: ")
 print connections['p2_to_p2'].get('weight', format='list')
-
+'''
 print("\n\nETA: connections['i_to_e']:")
 print connections['i_to_e'].get('eta', format='list')
 
@@ -641,13 +638,15 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', clear="true")
 
 print("\nPloting Fig. 4C...")
 
-plt.subplot(4, 6, 4)
+ax10 = fig.add_subplot(4, 6, 4)
 plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
-plt.subplot(4, 6, 10)
+ax10.set_title('C')
+
+ax11 = fig.add_subplot(4, 6, 10)
 plotRaster(pattern1Spikes, 'red')
 
-plt.subplot(4, 6, 16)
+ax12 = fig.add_subplot(4, 6, 16)
 plotISICVHist(pattern1Spikes, 'red')
 
 
@@ -708,13 +707,16 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 #subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 
-plt.subplot(4, 6, 5)
+ax13 = fig.add_subplot(4, 6, 5)
 plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
-plt.subplot(4, 6, 11)
+ax13.set_title('D')
+
+
+ax14 = fig.add_subplot(4, 6, 11)
 plotRaster(pattern1Spikes, 'red')
 
-plt.subplot(4, 6, 17)
+ax15 = fig.add_subplot(4, 6, 17)
 plotISICVHist(pattern1Spikes, 'red')
 
 
@@ -848,13 +850,16 @@ inhibSpikes 			= 	inhibPopulation.get_data('spikes', 	clear="true")
 #subPopControlSpikes 		= 	subPopControl.get_data('spikes', 	clear="true")
 
 
-plt.subplot(4, 6, 6)
+ax16 = fig.add_subplot(4, 6, 6)
 im = plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
-plt.subplot(4, 6, 12)
+ax16.set_title('E')
+
+
+ax17 = fig.add_subplot(4, 6, 12)
 plotRaster(pattern1Spikes, 'red')
 
-plt.subplot(4, 6, 18)
+ax18 = fig.add_subplot(4, 6, 18)
 plotISICVHist(pattern1Spikes, 'red')
 
 
