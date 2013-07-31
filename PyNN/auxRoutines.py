@@ -204,7 +204,164 @@ def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, cont
 
 
 
+def plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, controlSpikes, inhibSpikes):
 
+	
+	auxIndexInhib = 0
+	auxIndexExc = 0
+	auxIndexControl = 0
+	auxIndexPattern1 = 0
+	auxIndexPattern2 = 0
+	auxIndexPatternIntersection = 0
+	
+	
+	xIniInhib = 0
+	xFinInhib = 9
+	yIniInhib = 8
+	yFinInhib = 9
+	
+	xIniControl = 1
+	xFinControl = 3
+	yIniControl = 1
+	yFinControl = 3
+	
+	xIniPattern1 = 6
+	xFinPattern1 = 8
+	yIniPattern1 = 3
+	yFinPattern1 = 5
+	
+	xIniPattern2 = 5
+	xFinPattern2 = 7
+	yIniPattern2 = 4
+	yFinPattern2 = 6
+	
+	xIniPatternIntersection = 6
+	xFinPatternIntersection = 7
+	yIniPatternIntersection = 4
+	yFinPatternIntersection = 5
+	
+	
+	
+	grid = np.zeros((10, 10))
+	
+	for x in range(10):
+
+		for y in range(10):
+
+			if isInSubGrid(x, y, xIniInhib, xFinInhib, yIniInhib, yFinInhib):
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexInhib, inhibSpikes)
+				auxIndexInhib += 1
+			
+			elif isInSubGrid(x, y, xIniControl, xFinControl, yIniControl, yFinControl):
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexControl, controlSpikes)
+				auxIndexControl += 1
+			
+			elif isInSubGrid(x, y, xIniPattern1, xFinPattern1, yIniPattern1, yFinPattern1):
+				
+				if isInSubGrid(x, y, xIniPatternIntersection, xFinPatternIntersection, yIniPatternIntersection, yFinPatternIntersection):
+					
+					grid[x, y] = calculateNeuronFiringRate2(auxIndexPatternIntersection, intersectionSpikes)
+					auxIndexPatternIntersection += 1
+				else:
+					grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern1, pattern1Spikes)
+					auxIndexPattern1 += 1
+			
+			elif isInSubGrid(x, y, xIniPattern2, xFinPattern2, yIniPattern2, yFinPattern2):
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern2, pattern2Spikes)
+				auxIndexPattern2 += 1
+			
+			else:
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexExc, excSpikes)
+				auxIndexExc += 1
+	'''
+	for i in range(100):
+
+		
+		j = range(100)
+		plt.scatter(i*np.ones(100), j, c=grid[i, :], hold="true")
+	'''
+	##plt.imshow(grid, cmap=plt.cm.afmhot)
+	im = plt.imshow(grid, vmin=0, vmax=200, interpolation='none')
+	return im
+
+
+def plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, controlSpikes, inhibSpikes):
+	
+	auxIndexInhib = 0
+	auxIndexExc = 0
+	auxIndexControl = 0
+	auxIndexPattern1 = 0
+	auxIndexPattern2 = 0
+	auxIndexPatternIntersection = 0
+	
+	
+	xIniInhib = 0
+	xFinInhib = 19
+	yIniInhib = 16
+	yFinInhib = 19
+	
+	xIniControl = 2
+	xFinControl = 7
+	yIniControl = 2
+	yFinControl = 7
+	
+	xIniPattern1 = 12
+	xFinPattern1 = 17
+	yIniPattern1 = 6
+	yFinPattern1 = 11
+	
+	xIniPattern2 = 10
+	xFinPattern2 = 15
+	yIniPattern2 = 8
+	yFinPattern2 = 13
+	
+	xIniPatternIntersection = 12
+	xFinPatternIntersection = 15
+	yIniPatternIntersection = 8
+	yFinPatternIntersection = 11
+	
+	
+	
+	grid = np.zeros((20, 20))
+	
+	for x in range(20):
+
+		for y in range(20):
+
+			if isInSubGrid(x, y, xIniInhib, xFinInhib, yIniInhib, yFinInhib):
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexInhib, inhibSpikes)
+				auxIndexInhib += 1
+			
+			elif isInSubGrid(x, y, xIniControl, xFinControl, yIniControl, yFinControl):
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexControl, controlSpikes)
+				auxIndexControl += 1
+			
+			elif isInSubGrid(x, y, xIniPattern1, xFinPattern1, yIniPattern1, yFinPattern1):
+				
+				if isInSubGrid(x, y, xIniPatternIntersection, xFinPatternIntersection, yIniPatternIntersection, yFinPatternIntersection):
+					
+					grid[x, y] = calculateNeuronFiringRate2(auxIndexPatternIntersection, intersectionSpikes)
+					auxIndexPatternIntersection += 1
+				else:
+					grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern1, pattern1Spikes)
+					auxIndexPattern1 += 1
+			
+			elif isInSubGrid(x, y, xIniPattern2, xFinPattern2, yIniPattern2, yFinPattern2):
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern2, pattern2Spikes)
+				auxIndexPattern2 += 1
+			
+			else:
+				grid[x, y] = calculateNeuronFiringRate2(auxIndexExc, excSpikes)
+				auxIndexExc += 1
+	'''
+	for i in range(100):
+		
+		j = range(100)
+		plt.scatter(i*np.ones(100), j, c=grid[i, :], hold="true")
+	'''
+	##plt.imshow(grid, cmap=plt.cm.afmhot)
+	im = plt.imshow(grid, vmin=0, vmax=200, interpolation='none')
+	return im
 
 
 
