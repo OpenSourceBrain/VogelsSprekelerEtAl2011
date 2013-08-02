@@ -464,7 +464,7 @@ ax3.spines['left'].set_color('black')
 ax4 = fig.add_subplot(4, 6, 19)
 plt.ylabel('Percent [%]')
 #plotISICVHist(ax4, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax4, pattern1Spikes, 'red', controlSpikes, 'black')
+plotCorrDoubleHist(ax4, pattern1Spikes, 'red', controlSpikes, 'black')
 ax4.tick_params(axis='y', left='on')
 ax4.spines['left'].set_color('black')
 
@@ -506,32 +506,6 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4A)
 run(timeSimFig4A)
 
 
-
-'''
-print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
-'''
-
-
-
 simCPUTime_4A = timer.diff()
 
 print("\nTime to perform the simulation: %s seconds" %simCPUTime_4A)
@@ -554,7 +528,7 @@ ax5.set_title('A')
 
 ax6 = fig.add_subplot(4, 6, 8)
 ax6.get_yaxis().set_visible(False)
-plt.xlim((0.0, 200.0))
+plt.xlim((timePreSim, timePreSim + 200.0))
 plotRaster(ax6, pattern1Spikes, 'red')
 
 ax7 = fig.add_subplot(4, 6, 14)
@@ -565,7 +539,7 @@ plotISICVDoubleHist(ax7, pattern1Spikes, 'red', controlSpikes, 'black')
 ax8 = fig.add_subplot(4, 6, 20)
 ax8.get_yaxis().set_visible(False)
 #plotISICVHist(ax8, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax8, pattern1Spikes, 'red', controlSpikes, 'black')
+plotCorrDoubleHist(ax8, pattern1Spikes, 'red', controlSpikes, 'black')
 
 
 ## Fig. 4, B
@@ -628,7 +602,7 @@ ax9.set_title('B')
 
 ax10 = fig.add_subplot(4, 6, 9)
 ax10.get_yaxis().set_visible(False)
-plt.xlim((0.0, 200.0))
+plt.xlim((timePreSim + timeSimFig4A, timePreSim + timeSimFig4A + 200.0))
 plotRaster(ax10, pattern1Spikes, 'red')
 
 ax11 = fig.add_subplot(4, 6, 15)
@@ -639,7 +613,7 @@ plotISICVDoubleHist(ax11, pattern1Spikes, 'red', controlSpikes, 'black')
 ax12 = fig.add_subplot(4, 6, 21)
 ax12.get_yaxis().set_visible(False)
 #plotISICVHist(ax12, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax12, pattern1Spikes, 'red', controlSpikes, 'black')
+plotCorrDoubleHist(ax12, pattern1Spikes, 'red', controlSpikes, 'black')
 
 
 
@@ -687,30 +661,6 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4C)
 run(timeSimFig4C)
 
 
-'''
-print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
-'''
-
-
 
 simCPUTime_4C = timer.diff()
 
@@ -735,7 +685,7 @@ ax13.set_title('C')
 
 ax14 = fig.add_subplot(4, 6, 10)
 ax14.get_yaxis().set_visible(False)
-plt.xlim((0.0, 200.0))
+plt.xlim((timePreSim + timeSimFig4A + timeSimFig4B, timePreSim + timeSimFig4A + timeSimFig4B + 200.0))
 plotRaster(ax14, pattern1Spikes, 'red')
 
 ax15 = fig.add_subplot(4, 6, 16)
@@ -746,7 +696,7 @@ plotISICVDoubleHist(ax15, pattern1Spikes, 'red', controlSpikes, 'black')
 ax16 = fig.add_subplot(4, 6, 22)
 ax16.get_yaxis().set_visible(False)
 #plotISICVHist(ax16, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax16, pattern1Spikes, 'red', controlSpikes, 'black')
+plotCorrDoubleHist(ax16, pattern1Spikes, 'red', controlSpikes, 'black')
 
 
 
@@ -762,29 +712,6 @@ print("\nContinuing simulation...")
 print("\nSimulation time: %s milliseconds" %timeSimFig4D)
 
 run(timeSimFig4D)
-
-'''
-print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
-'''
 
 
 simCPUTime_4D = timer.diff()
@@ -810,7 +737,7 @@ ax17.set_title('D')
 
 ax18 = fig.add_subplot(4, 6, 11)
 ax18.get_yaxis().set_visible(False)
-plt.xlim((0.0, 200.0))
+plt.xlim((timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C, timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + 200.0))
 plotRaster(ax18, pattern1Spikes, 'red')
 
 ax19 = fig.add_subplot(4, 6, 17)
@@ -821,7 +748,7 @@ plotISICVDoubleHist(ax19, pattern1Spikes, 'red', controlSpikes, 'black')
 ax20 = fig.add_subplot(4, 6, 23)
 ax20.get_yaxis().set_visible(False)
 #plotISICVHist(ax20, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax20, pattern1Spikes, 'red', controlSpikes, 'black')
+plotCorrDoubleHist(ax20, pattern1Spikes, 'red', controlSpikes, 'black')
 
 
 
@@ -858,34 +785,6 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4E_part1)
 run(timeSimFig4E_part1)
 
 
-'''
-print("\n\nWEIGHT: connections['stim_to_pattern1']: ")
-print connections['stim_to_pattern1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
-'''
-
-
-
 simCPUTime_4E_part1 = timer.diff()
 
 print("\nTime to perform the simulation: %s seconds" %simCPUTime_4E_part1)
@@ -902,34 +801,6 @@ print("\nContinuing simulation...")
 print("\nSimulation time: %s milliseconds" %timeSimFig4E_part2)
 
 run(timeSimFig4E_part2)
-
-
-'''
-print("\n\nWEIGHT: connections['stim_to_pattern1']: ")
-print connections['stim_to_pattern1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
-'''
-
 
 
 simCPUTime_4E_part2 = timer.diff()
@@ -956,7 +827,7 @@ ax21.set_title('E')
 
 ax22 = fig.add_subplot(4, 6, 12)
 ax22.get_yaxis().set_visible(False)
-plt.xlim((0.0, 200.0))
+plt.xlim((timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + timeSimFig4D, timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + timeSimFig4D + 200.0))
 plotRaster(ax22, pattern1Spikes, 'red')
 
 ax23 = fig.add_subplot(4, 6, 18)
@@ -967,7 +838,7 @@ plotISICVDoubleHist(ax23, pattern1Spikes, 'red', controlSpikes, 'black')
 ax24 = fig.add_subplot(4, 6, 24)
 ax24.get_yaxis().set_visible(False)
 #plotISICVHist(ax24, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax24, pattern1Spikes, 'red', controlSpikes, 'black')
+plotCorrDoubleHist(ax24, pattern1Spikes, 'red', controlSpikes, 'black')
 
 
 

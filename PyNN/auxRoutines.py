@@ -178,6 +178,97 @@ def plotISICVDoubleHist(axis, popSpikes, barColor, popSpikes2, barColor2):
 	axis.spines['left'].set_linewidth(2)
 
 
+def biExponentialKernelFunction (t):
+	"Calculate the bi-exponential kernel as in Vogels et al. 2011. The time is specified in ms"
+	tau1 = 50 # [ms]
+	tau2 = 4 * tau1 # [ms]
+	return (1/tau1) * np.exp(-np.absolute(t) / tau1)  +  (1/tau2) * np.exp(-np.absolute(t) / tau2)
+
+
+def biExponentialKernel (timeStep, timeBoundKernel):
+	"Calculate the bi-exponential kernel as in Vogels et al. 2011. The time is specified in ms"
+	kernel = np.zeros(0)
+	for t in range(-timeBound, timeBound, timeStep):
+		kernel = np.append(kernel, biExponentialKernelFunction(t))
+	return kernel
+
+
+def createSpikesTrain (neuronSpikes):
+	"Receives the spike times of a neuron and returns an array representing the spike train"
+	
+	return 1
+
+
+def filterSpikesTrain (spikeTrain, timeStep, timeBoundKernel):
+	"Filter spike train using the bi-exponential kernel"
+	filteredSignal = np.convolve(spikeTrain, biExponentialKernel (timeStep, timeBoundKernel))
+	return filteredSignal
+
+
+def calculateCorrCoef (spikeTrain1, spikeTrain2):
+	"Calculate the correlation coeficient between spikeTrain1 and spikeTrain2"
+	
+	return 1
+
+
+
+def plotCorrHist(axis, popSpikes, barColor):
+	seg = popSpikes.segments[0]
+	allSpikes = seg.spiketrains
+	correlation = np.zeros(0)
+	for neuronSpikes in allSpikes:
+		correlation = np.append(correlation, 1)
+	if np.size(correlation) != 0:	
+		plt.hist(correlation, histtype='stepfilled', color=barColor, alpha=0.7)
+	#plt.ylabel('Percent [%]')
+	plt.xlabel('Spiking Correlation')
+	#plt.ylim((0, 100))
+	plt.xlim((0.0, 1.0))
+	#axis.set_frame_on(False)
+	axis.spines['top'].set_color('none')
+	axis.spines['left'].set_color('none')
+	axis.spines['right'].set_color('none')
+	axis.tick_params(axis='x', top='off')
+	axis.tick_params(axis='x', bottom='off')
+	axis.tick_params(axis='y', left='off')
+	axis.tick_params(axis='y', right='off')
+	axis.spines['bottom'].set_linewidth(2)
+	axis.spines['left'].set_linewidth(2)
+
+
+def plotCorrDoubleHist(axis, popSpikes, barColor, popSpikes2, barColor2):
+	seg = popSpikes2.segments[0]
+	allSpikes = seg.spiketrains
+	correlation = np.zeros(0)
+	for neuronSpikes in allSpikes:
+		correlation = np.append(correlation, 1)
+	if np.size(correlation) != 0:	
+		plt.hist(correlation, histtype='stepfilled', color=barColor2, alpha=0.6)
+
+	seg = popSpikes.segments[0]
+	allSpikes = seg.spiketrains
+	correlation = np.zeros(0)
+	for neuronSpikes in allSpikes:
+		correlation = np.append(correlation, 1)
+	if np.size(correlation) != 0:	
+		plt.hist(correlation, histtype='stepfilled', color=barColor, alpha=0.6)
+	
+	#plt.ylabel('Percent [%]')
+	plt.xlabel('Spiking Correlation')
+	#plt.ylim((0, 100))
+	plt.xlim((0.0, 1.0))
+	#axis.set_frame_on(False)
+	axis.spines['top'].set_color('none')
+	axis.spines['left'].set_color('none')
+	axis.spines['right'].set_color('none')
+	axis.tick_params(axis='x', top='off')
+	axis.tick_params(axis='x', bottom='off')
+	axis.tick_params(axis='y', left='off')
+	axis.tick_params(axis='y', right='off')
+	axis.spines['bottom'].set_linewidth(2)
+	axis.spines['left'].set_linewidth(2)
+
+
 
 def isInSubGrid (x, y, xIni, xFin, yIni, yFin):
 	"Checks if an element with coordenates (x, y) in a grid is within a sub-grid with the specified limits"
