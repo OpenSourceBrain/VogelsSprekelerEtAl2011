@@ -94,14 +94,26 @@ def calculateISICV2 (neuronSpikes):
 		return np.std(neuronISIs) / np.mean(neuronISIs)
 
 
-def plotRaster(popSpikes, color):
+def plotRaster(axis, popSpikes, color):
 	seg = popSpikes.segments[0]
 	for spiketrain in seg.spiketrains:
 		y = np.ones_like(spiketrain) * spiketrain.annotations['source_id']
-		plt.plot(spiketrain, y, '.')
+		plt.plot(spiketrain, y, '.', c=color)
+	plt.xlabel('Time [ms]')
+	#axis.set_frame_on(False)
+	axis.spines['top'].set_color('none')
+	axis.spines['left'].set_color('none')
+	axis.spines['right'].set_color('none')
+	axis.tick_params(axis='x', top='off')
+	axis.tick_params(axis='x', bottom='off')
+	axis.tick_params(axis='y', left='off')
+	axis.tick_params(axis='y', right='off')
+	axis.spines['bottom'].set_linewidth(2)
+	axis.spines['left'].set_linewidth(2)
 
 
-def plotISICVHist(popSpikes, barColor):
+
+def plotISICVHist(axis, popSpikes, barColor):
 	seg = popSpikes.segments[0]
 	allSpikes = seg.spiketrains
 	isiCVs = np.zeros(0)
@@ -110,11 +122,61 @@ def plotISICVHist(popSpikes, barColor):
 		if neuronISICV != -1:
 			isiCVs = np.append(isiCVs, neuronISICV)
 	if np.size(isiCVs) != 0:	
-		plt.hist(isiCVs, color=barColor)
-	plt.ylabel('Percent [%]')
+		plt.hist(isiCVs, histtype='stepfilled', color=barColor, alpha=0.5)
+	#plt.ylabel('Percent [%]')
 	plt.xlabel('ISI CV')
-	plt.ylim((0, 100))
+	#plt.ylim((0, 100))
 	plt.xlim((0.0, 3.0))
+	#axis.set_frame_on(False)
+	axis.spines['top'].set_color('none')
+	axis.spines['left'].set_color('none')
+	axis.spines['right'].set_color('none')
+	axis.tick_params(axis='x', top='off')
+	axis.tick_params(axis='x', bottom='off')
+	axis.tick_params(axis='y', left='off')
+	axis.tick_params(axis='y', right='off')
+	axis.spines['bottom'].set_linewidth(2)
+	axis.spines['left'].set_linewidth(2)
+
+
+def plotISICVDoubleHist(axis, popSpikes, barColor, popSpikes2, barColor2):
+	
+
+	seg = popSpikes2.segments[0]
+	allSpikes = seg.spiketrains
+	isiCVs = np.zeros(0)
+	for neuronSpikes in allSpikes:
+		neuronISICV = calculateISICV2(neuronSpikes)
+		if neuronISICV != -1:
+			isiCVs = np.append(isiCVs, neuronISICV)
+	if np.size(isiCVs) != 0:	
+		plt.hist(isiCVs, histtype='stepfilled', color=barColor2, alpha=0.6)
+
+	seg = popSpikes.segments[0]
+	allSpikes = seg.spiketrains
+	isiCVs = np.zeros(0)
+	for neuronSpikes in allSpikes:
+		neuronISICV = calculateISICV2(neuronSpikes)
+		if neuronISICV != -1:
+			isiCVs = np.append(isiCVs, neuronISICV)
+	if np.size(isiCVs) != 0:	
+		plt.hist(isiCVs, histtype='stepfilled', color=barColor, alpha=0.6)
+
+	#plt.ylabel('Percent [%]')
+	plt.xlabel('ISI CV')
+	#plt.ylim((0, 100))
+	plt.xlim((0.0, 3.0))
+	#axis.set_frame_on(False)
+	axis.spines['top'].set_color('none')
+	axis.spines['left'].set_color('none')
+	axis.spines['right'].set_color('none')
+	axis.tick_params(axis='x', top='off')
+	axis.tick_params(axis='x', bottom='off')
+	axis.tick_params(axis='y', left='off')
+	axis.tick_params(axis='y', right='off')
+	axis.spines['bottom'].set_linewidth(2)
+	axis.spines['left'].set_linewidth(2)
+
 
 
 def isInSubGrid (x, y, xIni, xFin, yIni, yFin):
@@ -123,13 +185,19 @@ def isInSubGrid (x, y, xIni, xFin, yIni, yFin):
 
 
 
-def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, controlSpikes, inhibSpikes):
+def plotGrid(axis, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, intersectionSpikes, controlSpikes, inhibSpikes):
 	
+	axis.get_xaxis().set_visible(False)
+	axis.get_yaxis().set_visible(False)
+
+
 	auxIndexInhib = 0
 	auxIndexExc = 0
 	auxIndexControl = 0
 	auxIndexPattern1 = 0
+	auxIndexPattern1_stim = 0
 	auxIndexPattern2 = 0
+	auxIndexPattern2_stim = 0
 	auxIndexPatternIntersection = 0
 	
 	
@@ -147,11 +215,21 @@ def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, cont
 	xFinPattern1 = 69
 	yIniPattern1 = 30
 	yFinPattern1 = 57
+
+	xIniPattern1_stim = 56
+	xFinPattern1_stim = 69
+	yIniPattern1_stim = 30
+	yFinPattern1_stim = 43
 	
 	xIniPattern2 = 22
 	xFinPattern2 = 49
 	yIniPattern2 = 50
 	yFinPattern2 = 77
+
+	xIniPattern2_stim = 22
+	xFinPattern2_stim = 35
+	yIniPattern2_stim = 64
+	yFinPattern2_stim = 77
 	
 	xIniPatternIntersection = 42
 	xFinPatternIntersection = 49
@@ -180,13 +258,26 @@ def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, cont
 					
 					grid[x, y] = calculateNeuronFiringRate2(auxIndexPatternIntersection, intersectionSpikes)
 					auxIndexPatternIntersection += 1
+
+				elif isInSubGrid(x, y, xIniPattern1_stim, xFinPattern1_stim, yIniPattern1_stim, yFinPattern1_stim):
+					
+					grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern1_stim, pattern1_stimSpikes)
+					
+					auxIndexPattern1_stim += 1
 				else:
 					grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern1, pattern1Spikes)
 					auxIndexPattern1 += 1
 			
 			elif isInSubGrid(x, y, xIniPattern2, xFinPattern2, yIniPattern2, yFinPattern2):
-				grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern2, pattern2Spikes)
-				auxIndexPattern2 += 1
+
+				if isInSubGrid(x, y, xIniPattern2_stim, xFinPattern2_stim, yIniPattern2_stim, yFinPattern2_stim):
+
+					grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern2_stim, pattern2_stimSpikes)
+					auxIndexPattern2_stim += 1
+
+				else:
+					grid[x, y] = calculateNeuronFiringRate2(auxIndexPattern2, pattern2Spikes)
+					auxIndexPattern2 += 1
 			
 			else:
 				grid[x, y] = calculateNeuronFiringRate2(auxIndexExc, excSpikes)
@@ -198,14 +289,16 @@ def plotGrid(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, cont
 		plt.scatter(i*np.ones(100), j, c=grid[i, :], hold="true")
 	'''
 	##plt.imshow(grid, cmap=plt.cm.afmhot)
-	im = plt.imshow(grid, vmin=0, vmax=200, interpolation='none')
+	im = plt.imshow(grid, vmin=0, vmax=200, interpolation='none', cmap=plt.cm.YlOrBr_r)
 	return im
 
 
 
 
-def plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, controlSpikes, inhibSpikes):
+def plotGrid_reduced(axis, excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, controlSpikes, inhibSpikes):
 
+	axis.get_xaxis().set_visible(False)
+	axis.get_yaxis().set_visible(False)
 	
 	auxIndexInhib = 0
 	auxIndexExc = 0
@@ -281,11 +374,14 @@ def plotGrid_reduced(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpik
 		plt.scatter(i*np.ones(100), j, c=grid[i, :], hold="true")
 	'''
 	##plt.imshow(grid, cmap=plt.cm.afmhot)
-	im = plt.imshow(grid, vmin=0, vmax=200, interpolation='none')
+	im = plt.imshow(grid, vmin=0, vmax=200, interpolation='none', cmap=plt.cm.YlOrBr_r)
 	return im
 
 
-def plotGrid_reduced2(excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, controlSpikes, inhibSpikes):
+def plotGrid_reduced2(axis, excSpikes, pattern1Spikes, pattern2Spikes, intersectionSpikes, controlSpikes, inhibSpikes):
+	
+	axis.get_xaxis().set_visible(False)
+	axis.get_yaxis().set_visible(False)
 	
 	auxIndexInhib = 0
 	auxIndexExc = 0
