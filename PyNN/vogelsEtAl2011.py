@@ -49,12 +49,24 @@ numOfNeuronsControl = 784
 numOfNeuronsInhibPopulation = 2000
 
 
+numOfSampledNeuronsPattern1_ISICV = 392
+numOfSampledNeuronsControl_ISICV = 392
+numOfSampledNeuronsPattern1_corr = 20
+numOfSampledNeuronsControl_corr = 20
+
+
+
+
+
 connectivity = 0.02
 weightExcSynapses = 0.003 		# [uS]
 weightInhibToInhibSynapses = 0.03 	# [uS]
 potentiationFactor = 5
 
-setup(timestep=0.1, min_delay=0.5)
+timeStep = 0.1
+
+
+setup(timestep=timeStep, min_delay=0.5)
 
 
 
@@ -109,10 +121,12 @@ timeSimFig4E_part1 = 1000
 timeSimFig4E_part2 = 4000		# 5 sec (5000 ms)
 
 
+timeBoundKernel = 300
+
 
 ### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
 
-downscaleFactor = 1000
+downscaleFactor = 2000
 minSimTime = 50 #[ms]
 
 eta = eta * downscaleFactor
@@ -397,77 +411,56 @@ print("\nPre-simulation time: %s milliseconds" %timePreSim)
 run(timePreSim)
 
 
-
-'''
-print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
-'''
-
-
-
 simCPUTime_pre = timer.diff()
 
-print("\nTime to perform the pre-simulation: %s seconds" %simCPUTime_pre)
+print("\nTime to perform the pre-simulation: %d seconds (%0.2f minutes)" %(simCPUTime_pre, simCPUTime_pre/60))
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data(		'spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data(		'spikes')
 pattern1_stimSpikes 		=	pattern1_stim.get_data(		'spikes', clear="true")
 pattern2Spikes 			=	pattern2.get_data(		'spikes', clear="true")
 pattern2_stimSpikes 		=	pattern2_stim.get_data(		'spikes', clear="true")
 patternIntersectionSpikes 	=	patternIntersection.get_data(	'spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data(	'spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data(	'spikes')
 inhibSpikes 			= 	inhibPopulation.get_data(	'spikes', clear="true")
 
 
+sampledPopPattern1_corr = pattern1.sample(numOfSampledNeuronsPattern1_corr)
+sampledPopControl_corr = controlPopulation.sample(numOfSampledNeuronsControl_corr)
+
+sampledPopPattern1_ISICV = pattern1.sample(numOfSampledNeuronsPattern1_ISICV)
+sampledPopControl_ISICV = controlPopulation.sample(numOfSampledNeuronsControl_ISICV)
+
+sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clear="true")
+sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
+
+#sampledPopPattern1Spikes_ISICV = sampledPopPattern1_ISICV.get_data(	'spikes', clear="true")
+#sampledPopControlSpikes_ISICV = sampledPopControl_ISICV.get_data(	'spikes', clear="true")
+
+
+plt.ion()
 fig = plt.figure(1, facecolor='white')
 
-
-ax1 = fig.add_subplot(4, 6, 1)
-ax1.set_title('pre')
-plotGrid(ax1, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
+simTimeIni = 0
+simTimeFin = timePreSim
 
 
-ax2 = fig.add_subplot(4, 6, 7)
-plt.ylabel('Cell no.')
-plt.xlim((0.0, 200.0))
-plotRaster(ax2, pattern1Spikes, 'red')
-ax2.tick_params(axis='y', left='on')
-ax2.spines['left'].set_color('black')
-
-ax3 = fig.add_subplot(4, 6, 13)
-plt.ylabel('Percent [%]')
-#plotISICVHist(ax3, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax3, pattern1Spikes, 'red', controlSpikes, 'black')
-ax3.tick_params(axis='y', left='on')
-ax3.spines['left'].set_color('black')
-#ax3.spines['bottom'].set_position(('axes',0.5))
+im = plotFig4Column(fig, 1, timeStep, simTimeIni, simTimeFin, timeBoundKernel,
+		excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes,
+		numOfSampledNeuronsPattern1_corr, sampledPopPattern1Spikes_corr, numOfSampledNeuronsControl_corr, sampledPopControlSpikes_corr)
 
 
-ax4 = fig.add_subplot(4, 6, 19)
-plt.ylabel('Percent [%]')
-#plotISICVHist(ax4, pattern1Spikes, 'red')
-plotCorrDoubleHist(ax4, pattern1Spikes, 'red', controlSpikes, 'black')
-ax4.tick_params(axis='y', left='on')
-ax4.spines['left'].set_color('black')
+#fig.subplots_adjust(left=0.8)
+cbar_ax = fig.add_axes([0.08, 0.72, 0.01, 0.15])
+#cbar_ax.set_ylabel('Rate [Hz]')
 
+cbar = fig.colorbar(im, cax=cbar_ax, ticks=[0, 50, 100, 150, 200])
+cbar.ax.set_yticklabels(['0', '50', '100', '150', '200'])
+cbar.ax.set_ylabel('Rate [Hz]')
+cbar.ax.yaxis.labelpad = -50
+
+plt.show(block=False)
+fig.canvas.draw()
 
 ## Fig. 4, A
 ##
@@ -508,39 +501,37 @@ run(timeSimFig4A)
 
 simCPUTime_4A = timer.diff()
 
-print("\nTime to perform the simulation: %s seconds" %simCPUTime_4A)
+print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4A, simCPUTime_4A/60))
 
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data(		'spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data(		'spikes')
 pattern1_stimSpikes 		=	pattern1_stim.get_data(		'spikes', clear="true")
 pattern2Spikes 			=	pattern2.get_data(		'spikes', clear="true")
 pattern2_stimSpikes 		=	pattern2_stim.get_data(		'spikes', clear="true")
 patternIntersectionSpikes 	=	patternIntersection.get_data(	'spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data(	'spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data(	'spikes')
 inhibSpikes 			= 	inhibPopulation.get_data(	'spikes', clear="true")
+
+
+sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clear="true")
+sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
+
+
 
 print("\nPloting Fig. 4A...")
 
-ax5 = fig.add_subplot(4, 6, 2)
-plotGrid(ax5, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-ax5.set_title('A')
 
-ax6 = fig.add_subplot(4, 6, 8)
-ax6.get_yaxis().set_visible(False)
-plt.xlim((timePreSim, timePreSim + 200.0))
-plotRaster(ax6, pattern1Spikes, 'red')
+simTimeIni = timePreSim
+simTimeFin = timePreSim + timeSimFig4A
 
-ax7 = fig.add_subplot(4, 6, 14)
-ax7.get_yaxis().set_visible(False)
-#plotISICVHist(ax7, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax7, pattern1Spikes, 'red', controlSpikes, 'black')
 
-ax8 = fig.add_subplot(4, 6, 20)
-ax8.get_yaxis().set_visible(False)
-#plotISICVHist(ax8, pattern1Spikes, 'red')
-plotCorrDoubleHist(ax8, pattern1Spikes, 'red', controlSpikes, 'black')
+plotFig4Column(fig, 2, timeStep, simTimeIni, simTimeFin, timeBoundKernel,
+		excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes,
+		numOfSampledNeuronsPattern1_corr, sampledPopPattern1Spikes_corr, numOfSampledNeuronsControl_corr, sampledPopControlSpikes_corr)
 
+#plt.show(block=False)
+fig.canvas.draw()
 
 ## Fig. 4, B
 ##
@@ -555,68 +546,40 @@ print("\nSimulation time: %s milliseconds" %timeSimFig4B)
 
 run(timeSimFig4B)
 
-'''
-print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
 
-print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
-
-print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
-
-print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
-
-print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
-'''
 
 
 
 simCPUTime_4B = timer.diff()
 
-print("\nTime to perform the simulation: %s seconds" %simCPUTime_4B)
+print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4B, simCPUTime_4B/60))
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data(		'spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data(		'spikes')
 pattern1_stimSpikes 		=	pattern1_stim.get_data(		'spikes', clear="true")
 pattern2Spikes 			=	pattern2.get_data(		'spikes', clear="true")
 pattern2_stimSpikes 		=	pattern2_stim.get_data(		'spikes', clear="true")
 patternIntersectionSpikes 	=	patternIntersection.get_data(	'spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data(	'spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data(	'spikes')
 inhibSpikes 			= 	inhibPopulation.get_data(	'spikes', clear="true")
+
+
+sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clear="true")
+sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
 
 
 print("\nPloting Fig. 4B...")
 
-ax9 = fig.add_subplot(4, 6, 3)
-plotGrid(ax9, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-ax9.set_title('B')
-
-ax10 = fig.add_subplot(4, 6, 9)
-ax10.get_yaxis().set_visible(False)
-plt.xlim((timePreSim + timeSimFig4A, timePreSim + timeSimFig4A + 200.0))
-plotRaster(ax10, pattern1Spikes, 'red')
-
-ax11 = fig.add_subplot(4, 6, 15)
-ax11.get_yaxis().set_visible(False)
-#plotISICVHist(ax11, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax11, pattern1Spikes, 'red', controlSpikes, 'black')
-
-ax12 = fig.add_subplot(4, 6, 21)
-ax12.get_yaxis().set_visible(False)
-#plotISICVHist(ax12, pattern1Spikes, 'red')
-plotCorrDoubleHist(ax12, pattern1Spikes, 'red', controlSpikes, 'black')
+simTimeIni = timePreSim + timeSimFig4A
+simTimeFin = timePreSim + timeSimFig4A +timeSimFig4B
 
 
+plotFig4Column(fig, 3, timeStep, simTimeIni, simTimeFin, timeBoundKernel,
+		excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes,
+		numOfSampledNeuronsPattern1_corr, sampledPopPattern1Spikes_corr, numOfSampledNeuronsControl_corr, sampledPopControlSpikes_corr)
 
+#plt.show(block=False)
+fig.canvas.draw()
 
 ## Fig. 4, C
 ##
@@ -664,41 +627,33 @@ run(timeSimFig4C)
 
 simCPUTime_4C = timer.diff()
 
-print("\nTime to perform the simulation: %s seconds" %simCPUTime_4C)
+print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4C, simCPUTime_4C/60))
 
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data(		'spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data(		'spikes')
 pattern1_stimSpikes 		=	pattern1_stim.get_data(		'spikes', clear="true")
 pattern2Spikes 			=	pattern2.get_data(		'spikes', clear="true")
 pattern2_stimSpikes 		=	pattern2_stim.get_data(		'spikes', clear="true")
 patternIntersectionSpikes 	=	patternIntersection.get_data(	'spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data(	'spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data(	'spikes')
 inhibSpikes 			= 	inhibPopulation.get_data(	'spikes', clear="true")
+
+sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clear="true")
+sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
 
 
 print("\nPloting Fig. 4C...")
 
-ax13 = fig.add_subplot(4, 6, 4)
-plotGrid(ax13, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-ax13.set_title('C')
-
-ax14 = fig.add_subplot(4, 6, 10)
-ax14.get_yaxis().set_visible(False)
-plt.xlim((timePreSim + timeSimFig4A + timeSimFig4B, timePreSim + timeSimFig4A + timeSimFig4B + 200.0))
-plotRaster(ax14, pattern1Spikes, 'red')
-
-ax15 = fig.add_subplot(4, 6, 16)
-ax15.get_yaxis().set_visible(False)
-#plotISICVHist(ax15, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax15, pattern1Spikes, 'red', controlSpikes, 'black')
-
-ax16 = fig.add_subplot(4, 6, 22)
-ax16.get_yaxis().set_visible(False)
-#plotISICVHist(ax16, pattern1Spikes, 'red')
-plotCorrDoubleHist(ax16, pattern1Spikes, 'red', controlSpikes, 'black')
+simTimeIni = timePreSim + timeSimFig4A +timeSimFig4B
+simTimeFin = timePreSim + timeSimFig4A +timeSimFig4B+ timeSimFig4C
 
 
+plotFig4Column(fig, 4, timeStep, simTimeIni, simTimeFin, timeBoundKernel,
+		excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes,
+		numOfSampledNeuronsPattern1_corr, sampledPopPattern1Spikes_corr, numOfSampledNeuronsControl_corr, sampledPopControlSpikes_corr)
+
+fig.canvas.draw()
 
 ## Fig. 4, D
 ##
@@ -716,41 +671,32 @@ run(timeSimFig4D)
 
 simCPUTime_4D = timer.diff()
 
-print("\nTime to perform the simulation: %s seconds" %simCPUTime_4D)
+print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4D, simCPUTime_4D/60))
 
 print("\nPloting Fig. 4D...")
 
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data(		'spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data(		'spikes')
 pattern1_stimSpikes 		=	pattern1_stim.get_data(		'spikes', clear="true")
 pattern2Spikes 			=	pattern2.get_data(		'spikes', clear="true")
 pattern2_stimSpikes 		=	pattern2_stim.get_data(		'spikes', clear="true")
 patternIntersectionSpikes 	=	patternIntersection.get_data(	'spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data(	'spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data(	'spikes')
 inhibSpikes 			= 	inhibPopulation.get_data(	'spikes', clear="true")
 
+sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clear="true")
+sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
 
-ax17 = fig.add_subplot(4, 6, 5)
-plotGrid(ax17, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-ax17.set_title('D')
-
-ax18 = fig.add_subplot(4, 6, 11)
-ax18.get_yaxis().set_visible(False)
-plt.xlim((timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C, timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + 200.0))
-plotRaster(ax18, pattern1Spikes, 'red')
-
-ax19 = fig.add_subplot(4, 6, 17)
-ax19.get_yaxis().set_visible(False)
-#plotISICVHist(ax19, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax19, pattern1Spikes, 'red', controlSpikes, 'black')
-
-ax20 = fig.add_subplot(4, 6, 23)
-ax20.get_yaxis().set_visible(False)
-#plotISICVHist(ax20, pattern1Spikes, 'red')
-plotCorrDoubleHist(ax20, pattern1Spikes, 'red', controlSpikes, 'black')
+simTimeIni = timePreSim + timeSimFig4A +timeSimFig4B + timeSimFig4C
+simTimeFin = timePreSim + timeSimFig4A +timeSimFig4B + timeSimFig4C + timeSimFig4D
 
 
+plotFig4Column(fig, 5, timeStep, simTimeIni, simTimeFin, timeBoundKernel,
+		excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes,
+		numOfSampledNeuronsPattern1_corr, sampledPopPattern1Spikes_corr, numOfSampledNeuronsControl_corr, sampledPopControlSpikes_corr)
+
+fig.canvas.draw()
 
 ## Fig. 4, E
 ##
@@ -762,13 +708,7 @@ plotCorrDoubleHist(ax20, pattern1Spikes, 'red', controlSpikes, 'black')
 
 
 
-'''
-subPopPattern1Stim = pattern1.sample(180) # need to be disjoint of the analysed population 
 
-fpcStim 	= FixedProbabilityConnector(0.05, callback=progress_bar)
-
-connections['stim_to_subPopPattern1Stim'] 	= Projection(stimulus, 	subPopPattern1Stim, 		fpcStim, 	exc_synapse_type)
-'''
 
 
 
@@ -787,7 +727,7 @@ run(timeSimFig4E_part1)
 
 simCPUTime_4E_part1 = timer.diff()
 
-print("\nTime to perform the simulation: %s seconds" %simCPUTime_4E_part1)
+print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4E_part1, simCPUTime_4E_part1/60))
 
 '''
 connections['stim_to_subPopPattern1Stim'].set(weight = 0)
@@ -805,60 +745,43 @@ run(timeSimFig4E_part2)
 
 simCPUTime_4E_part2 = timer.diff()
 
-print("\nTime to perform the simulation: %s seconds" %simCPUTime_4E_part2)
+print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4E_part2, simCPUTime_4E_part2/60))
 
 print("\nploting Fig. 4E")
 
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
-pattern1Spikes 			=	pattern1.get_data(		'spikes', clear="true")
+pattern1Spikes 			=	pattern1.get_data(		'spikes')
 pattern1_stimSpikes 		=	pattern1_stim.get_data(		'spikes', clear="true")
 pattern2Spikes 			=	pattern2.get_data(		'spikes', clear="true")
 pattern2_stimSpikes 		=	pattern2_stim.get_data(		'spikes', clear="true")
 patternIntersectionSpikes 	=	patternIntersection.get_data(	'spikes', clear="true")
-controlSpikes 			=	controlPopulation.get_data(	'spikes', clear="true")
+controlSpikes 			=	controlPopulation.get_data(	'spikes')
 inhibSpikes 			= 	inhibPopulation.get_data(	'spikes', clear="true")
 
 
-ax21 = fig.add_subplot(4, 6, 6)
-im = plotGrid(ax21, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
-ax21.set_title('E')
+sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clear="true")
+sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
 
 
-ax22 = fig.add_subplot(4, 6, 12)
-ax22.get_yaxis().set_visible(False)
-plt.xlim((timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + timeSimFig4D, timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + timeSimFig4D + 200.0))
-plotRaster(ax22, pattern1Spikes, 'red')
+simTimeIni = timePreSim + timeSimFig4A +timeSimFig4B + timeSimFig4C + timeSimFig4D
+simTimeFin = timePreSim + timeSimFig4A +timeSimFig4B + timeSimFig4C + timeSimFig4D + timeSimFig4E_part1 + timeSimFig4E_part2
 
-ax23 = fig.add_subplot(4, 6, 18)
-ax23.get_yaxis().set_visible(False)
-#plotISICVHist(ax23, pattern1Spikes, 'red')
-plotISICVDoubleHist(ax23, pattern1Spikes, 'red', controlSpikes, 'black')
+im = plotFig4Column(fig, 6, timeStep, simTimeIni, simTimeFin, timeBoundKernel,
+		excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes,
+		numOfSampledNeuronsPattern1_corr, sampledPopPattern1Spikes_corr, numOfSampledNeuronsControl_corr, sampledPopControlSpikes_corr)
 
-ax24 = fig.add_subplot(4, 6, 24)
-ax24.get_yaxis().set_visible(False)
-#plotISICVHist(ax24, pattern1Spikes, 'red')
-plotCorrDoubleHist(ax24, pattern1Spikes, 'red', controlSpikes, 'black')
+fig.canvas.draw()
+plt.show()
 
 
-
-totalSimulatedTime = timePreSim + timeSimFig4A + timeSimFig4B + timeSimFig4C + timeSimFig4D + timeSimFig4E_part1 + timeSimFig4E_part2
-
-print("\nTotal simulated time: %s milliseconds" %totalSimulatedTime)
+print("\nTotal simulated time: %s milliseconds" %simTimeFin)
 
 totalCPUTime = simCPUTime_pre + simCPUTime_4A + simCPUTime_4B + simCPUTime_4C + simCPUTime_4D + simCPUTime_4E_part1 + simCPUTime_4E_part2
 
-print("\nTotal CPU time: %s seconds" %totalCPUTime)
+print("\nTotal CPU time: %d seconds (%0.2f minutes)" %(totalCPUTime, totalCPUTime/60))
 
-#fig.subplots_adjust(left=0.8)
-cbar_ax = fig.add_axes([0.07, 0.72, 0.01, 0.15])
-#cbar_ax.set_ylabel('Rate [Hz]')
-
-cbar = fig.colorbar(im, cax=cbar_ax, ticks=[0, 50, 100, 150, 200])
-cbar.ax.set_yticklabels(['0', '50', '100', '150', '200'])
-cbar.ax.set_ylabel('Rate [Hz]')
-cbar.ax.yaxis.labelpad = -60
-plt.show()
+raw_input("Simulation finished... Press enter to exit...")
 
 
 

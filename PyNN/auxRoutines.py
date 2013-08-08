@@ -112,6 +112,36 @@ def plotRaster(axis, popSpikes, color):
 	axis.spines['left'].set_linewidth(2)
 
 
+def plotRaster2(popSpikes, color):
+	seg = popSpikes.segments[0]
+	for spiketrain in seg.spiketrains:
+		y = np.ones_like(spiketrain) * spiketrain.annotations['source_id']
+		plt.plot(spiketrain, y, '.', c=color)
+	plt.xlabel('Time [ms]')
+
+
+def plotSpikeTrains(popSpikes, timeStep, simTimeIni, simTimeFin):
+	seg = popSpikes.segments[0]
+	for neuronSpikeTimes in seg.spiketrains:
+		y = createSpikeTrain(neuronSpikeTimes, timeStep, simTimeIni, simTimeFin)
+		x = np.linspace(simTimeIni, simTimeFin, num = int((simTimeFin-simTimeIni)/timeStep))
+		plt.plot(x, y)
+	plt.xlabel('Time [ms]')
+
+
+
+def plotFilteredSpikeTrains(popSpikes, timeStep, simTimeIni, simTimeFin, timeBoundKernel):
+	seg = popSpikes.segments[0]
+	for neuronSpikeTimes in seg.spiketrains:
+		y = filterSpikesTrain (neuronSpikeTimes, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+		numPoints = int((simTimeFin - simTimeIni)/timeStep)
+		if int(2*timeBoundKernel/timeStep) + 1 > numPoints:
+			numPoints = int(2*timeBoundKernel/timeStep) + 1
+		x = np.linspace(simTimeIni, simTimeFin, num = numPoints)
+		plt.plot(x, y)
+	plt.xlabel('Time [ms]')
+
+
 
 def plotISICVHist(axis, popSpikes, barColor):
 	seg = popSpikes.segments[0]
@@ -182,44 +212,105 @@ def biExponentialKernelFunction (t):
 	"Calculate the bi-exponential kernel as in Vogels et al. 2011. The time is specified in ms"
 	tau1 = 50 # [ms]
 	tau2 = 4 * tau1 # [ms]
-	return (1/tau1) * np.exp(-np.absolute(t) / tau1)  +  (1/tau2) * np.exp(-np.absolute(t) / tau2)
+	return (1./tau1) * np.exp(-np.absolute(t) / tau1)  -  (1./tau2) * np.exp(-np.absolute(t) / tau2)
+
+
+
 
 
 def biExponentialKernel (timeStep, timeBoundKernel):
 	"Calculate the bi-exponential kernel as in Vogels et al. 2011. The time is specified in ms"
-	kernel = np.zeros(0)
-	for t in range(-timeBound, timeBound, timeStep):
-		kernel = np.append(kernel, biExponentialKernelFunction(t))
+	numOfPoints = int(2*timeBoundKernel/timeStep) + 1
+	kernel = np.zeros(numOfPoints)
+	index = 0
+	for t in np.linspace(-timeBoundKernel, timeBoundKernel, num = numOfPoints):
+		kernel[index] = biExponentialKernelFunction (t)
+		index += 1
 	return kernel
 
 
-def createSpikesTrain (neuronSpikes):
+def createSpikeTrain (neuronSpikes, timeStep, simTimeIni, simTimeFin):
 	"Receives the spike times of a neuron and returns an array representing the spike train"
-	
-	return 1
+	spikeIndex = 0
+	spikeTrain = np.zeros(int((simTimeFin - simTimeIni)/timeStep))
+	for t in np.linspace(simTimeIni, simTimeFin, num = int((simTimeFin-simTimeIni)/timeStep)):
+		if spikeIndex < np.size(neuronSpikes):
+			spikeTime = neuronSpikes[spikeIndex]
+			#print (t)
+			#print (spikeTime)
+			if int(t) == int(spikeTime): #rounding to 1ms timeStep
+				index = int((t-simTimeIni)/timeStep)
+				spikeTrain[index] = 1
+				spikeIndex += 1
+	return spikeTrain
 
 
-def filterSpikesTrain (spikeTrain, timeStep, timeBoundKernel):
+def filterSpikesTrain (neuronSpikes, timeStep, simTimeIni, simTimeFin, timeBoundKernel):
 	"Filter spike train using the bi-exponential kernel"
-	filteredSignal = np.convolve(spikeTrain, biExponentialKernel (timeStep, timeBoundKernel))
+	spikeTrain = createSpikeTrain (neuronSpikes, timeStep, simTimeIni, simTimeFin)
+	filteredSignal = np.convolve(spikeTrain, biExponentialKernel (timeStep, timeBoundKernel), 'same')
 	return filteredSignal
 
 
-def calculateCorrCoef (spikeTrain1, spikeTrain2):
+def calculateCorrCoef (allSpikes, neuronIndex1, neuronIndex2, autoCov, timeStep, simTimeIni, simTimeFin, timeBoundKernel):
 	"Calculate the correlation coeficient between spikeTrain1 and spikeTrain2"
 	
-	return 1
+	if neuronIndex1 == neuronIndex2:
+		return 1
+	else:
+		Fi = filterSpikesTrain(allSpikes[neuronIndex1], timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+		Fj = filterSpikesTrain(allSpikes[neuronIndex2], timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+		Vij = np.sum(Fi*Fj)
+		Vii = autoCov[neuronIndex1]
+		Vjj = autoCov[neuronIndex2]
+		#print "Fi: %f\t Fj: %f\t Vij: %f\t Vii: %f\t Vjj: %f" %(np.mean(Fi), np.mean(Fj), Vij, Vii, Vjj) 
+		return Vij/np.sqrt(Vii*Vjj)
 
 
-
-def plotCorrHist(axis, popSpikes, barColor):
+def createAutoCov(numNeuronsPop, popSpikes, timeStep, simTimeIni, simTimeFin, timeBoundKernel): # to speed up processing
 	seg = popSpikes.segments[0]
 	allSpikes = seg.spiketrains
-	correlation = np.zeros(0)
+	
+	cov = np.zeros(numNeuronsPop)
+	index = 0
 	for neuronSpikes in allSpikes:
-		correlation = np.append(correlation, 1)
-	if np.size(correlation) != 0:	
-		plt.hist(correlation, histtype='stepfilled', color=barColor, alpha=0.7)
+		if np.size(neuronSpikes) > 0:
+			V = filterSpikesTrain(neuronSpikes, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+			cov[index] = np.sum(V*V)
+		else:
+			cov[index] = -1 # To sinalize that there is no spike in this neuron
+		index += 1
+	return cov
+
+
+
+def plotCorrHist(axis, numNeuronsPop, popSpikes, timeStep, simTimeIni, simTimeFin, timeBoundKernel, barColor):
+	seg = popSpikes.segments[0]
+	allSpikes = seg.spiketrains
+	numSpikingNeurons = 0
+	indexesSpikingNeurons = np.zeros(numNeuronsPop)
+	
+	autoCov = createAutoCov(numNeuronsPop, popSpikes, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+	
+	corrCoefs = np.zeros(0)
+	for k in range(0, numNeuronsPop): 	# Considering only spiking neurons
+			#print "k: %d" %k
+			if np.size(allSpikes[k]) > 0:
+				numSpikingNeurons += 1
+				indexesSpikingNeurons[k] = 1
+	
+	
+	
+	for i in range(0, numNeuronsPop):
+		for j in range(i, numNeuronsPop):
+			if indexesSpikingNeurons[i] == 1 and indexesSpikingNeurons[j] == 1 and i != j:
+				corrCoef = calculateCorrCoef(allSpikes,i,j, autoCov, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+				corrCoefs = np.append(corrCoefs, corrCoef)
+				print "i: %d\tj: %d\tcorrCoef: %f" %(i,j,corrCoef)
+	
+	
+	if np.size(corrCoefs) != 0:	
+		plt.hist(corrCoefs, histtype='stepfilled', color=barColor, alpha=0.7)
 	#plt.ylabel('Percent [%]')
 	plt.xlabel('Spiking Correlation')
 	#plt.ylim((0, 100))
@@ -236,23 +327,69 @@ def plotCorrHist(axis, popSpikes, barColor):
 	axis.spines['left'].set_linewidth(2)
 
 
-def plotCorrDoubleHist(axis, popSpikes, barColor, popSpikes2, barColor2):
-	seg = popSpikes2.segments[0]
-	allSpikes = seg.spiketrains
-	correlation = np.zeros(0)
-	for neuronSpikes in allSpikes:
-		correlation = np.append(correlation, 1)
-	if np.size(correlation) != 0:	
-		plt.hist(correlation, histtype='stepfilled', color=barColor2, alpha=0.6)
+def plotCorrDoubleHist(axis, numNeuronsPop, popSpikes, barColor, numNeuronsPop2, popSpikes2, barColor2, timeStep, simTimeIni, simTimeFin, timeBoundKernel):
+	seg2 = popSpikes2.segments[0]
+	allSpikes2 = seg2.spiketrains
+	#print "allSpikes2: "
+	#print allSpikes2
+	#print("\n\n")
+	numSpikingNeurons2 = 0
+	indexesSpikingNeurons2 = np.zeros(numNeuronsPop2)
+	autoCov = createAutoCov(numNeuronsPop2, popSpikes2, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+	
+	corrCoefs2 = np.zeros(0)
+	
+	for k in range(0, numNeuronsPop2): 	# Considering only spiking neurons
+			#print "allSpikes2[%d]: " %k
+			#print allSpikes2[k]
+			#print("\n\n")
+			if np.size(allSpikes2[k]) > 0:
+				numSpikingNeurons2 += 1
+				indexesSpikingNeurons2[k] = 1
+	
+	print("\n")
+	for i in range(0, numNeuronsPop2):
+		for j in range(i, numNeuronsPop2):
+			if indexesSpikingNeurons2[i] == 1 and indexesSpikingNeurons2[j] == 1 and i != j:
+				corrCoef = calculateCorrCoef(allSpikes2,i,j, autoCov, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+				corrCoefs2 = np.append(corrCoefs2, corrCoef)
+				print "control: i: %d\tj: %d\tcorrCoef: %f" %(i,j,corrCoef)
+	
+	if np.size(corrCoefs2) != 0:	
+		plt.hist(corrCoefs2, histtype='stepfilled', color=barColor2, alpha=0.7)
+
 
 	seg = popSpikes.segments[0]
 	allSpikes = seg.spiketrains
-	correlation = np.zeros(0)
-	for neuronSpikes in allSpikes:
-		correlation = np.append(correlation, 1)
-	if np.size(correlation) != 0:	
-		plt.hist(correlation, histtype='stepfilled', color=barColor, alpha=0.6)
+	numSpikeTrains = np.size(allSpikes)
+	#print "allSpikes: "
+	#print allSpikes
+	#print("\n\n")
+	numSpikingNeurons = 0
+	indexesSpikingNeurons = np.zeros(numNeuronsPop)
+	autoCov = createAutoCov(numNeuronsPop, popSpikes, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
 	
+	corrCoefs = np.zeros(0)
+	
+	for k in range(0, numNeuronsPop): 	# Considering only spiking neurons
+			#print "allSpikes[%d]: " %k
+			#print allSpikes[k]
+			#print("\n\n")
+			if np.size(allSpikes[k]) > 0:
+				numSpikingNeurons += 1
+				indexesSpikingNeurons[k] = 1
+	
+	print("\n")
+	for i in range(0, numNeuronsPop):
+		for j in range(i, numNeuronsPop):
+			if indexesSpikingNeurons[i] == 1 and indexesSpikingNeurons[j] == 1 and i != j:
+				corrCoef = calculateCorrCoef(allSpikes,i,j, autoCov, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+				corrCoefs = np.append(corrCoefs, corrCoef)
+				print "pattern1: i: %d\tj: %d\tcorrCoef: %f" %(i,j,corrCoef)
+	
+	if np.size(corrCoefs) != 0:	
+		plt.hist(corrCoefs, histtype='stepfilled', color=barColor, alpha=0.7)
+
 	#plt.ylabel('Percent [%]')
 	plt.xlabel('Spiking Correlation')
 	#plt.ylim((0, 100))
@@ -551,5 +688,98 @@ def plotGrid_reduced2(axis, excSpikes, pattern1Spikes, pattern2Spikes, intersect
 	return im
 
 
+def plotFig4Column(fig, column, timeStep, simTimeIni, simTimeFin, timeBoundKernel,
+		excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes,
+		numOfSampledNeuronsPattern1, sampledPopPattern1Spikes, numOfSampledNeuronsControl, sampledPopControlSpikes):
+
+	ax1 = fig.add_subplot(4, 6, column)
+	#ax1.set_position([0.1 + (column - 1) * 0.15, 0.8, 0.15, 0.15])
+	
+	if column == 1:
+		ax1.set_title('pre')
+	elif column == 2:
+		ax1.set_title('A')
+	elif column == 3:
+		ax1.set_title('B')
+	elif column == 4:
+		ax1.set_title('C')
+	elif column == 5:
+		ax1.set_title('D')
+	elif column == 6:
+		ax1.set_title('E')
+	
+	im = plotGrid(ax1, excSpikes, pattern1Spikes, pattern1_stimSpikes, pattern2Spikes, pattern2_stimSpikes, patternIntersectionSpikes, controlSpikes, inhibSpikes)
 
 
+	ax2 = fig.add_subplot(4, 6, column + 6)
+	if column == 1:
+		plt.ylabel('Cell no.')
+		plt.xlim((0.0, 40.0))
+		ax2.spines['left'].set_color('black')
+	else:
+		ax2.get_yaxis().set_visible(False)
+		plt.xlim((0.0, 200.0))
+	
+	#plt.ylim((0.0, 15.0))
+	plotRaster(ax2, pattern1Spikes, 'red')
+	ax2.tick_params(axis='y', left='on')
+	#ax2.spines['left'].set_color('black')
+
+	ax3 = fig.add_subplot(4, 6, column + 12)
+	if column == 1:
+		plt.ylabel('Percent [%]')
+		ax3.spines['left'].set_color('black')
+	else:
+		ax3.get_yaxis().set_visible(False)
+
+	#plotISICVHist(ax3, pattern1Spikes, 'red')
+	plotISICVDoubleHist(ax3, pattern1Spikes, 'red', controlSpikes, 'black')
+	ax3.tick_params(axis='y', left='on')
+	ax3.spines['left'].set_color('black')
+	#ax3.spines['bottom'].set_position(('axes',0.5))
+
+
+	ax4 = fig.add_subplot(4, 6, column + 18)
+	if column == 1:
+		plt.ylabel('Percent [%]')
+		ax4.spines['left'].set_color('black')
+	else:
+		ax4.get_yaxis().set_visible(False)
+	#plotISICVHist(ax4, pattern1Spikes, 'red')
+	plotCorrDoubleHist(ax4, numOfSampledNeuronsPattern1, sampledPopPattern1Spikes, 'red', 
+				numOfSampledNeuronsControl, sampledPopControlSpikes, 'black', 
+				timeStep, simTimeIni, simTimeFin, timeBoundKernel)
+	
+	ax4.spines['left'].set_color('black')
+	ax4.tick_params(axis='y', left='on')
+	plt.xlim((-0.2, 1.0))
+
+	return im
+
+
+
+
+
+
+'''
+print("\n\nWEIGHT: connections['e_to_e']: ")
+print connections['e_to_e'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p1_to_p1']: ")
+print connections['p1_to_p1'].get('weight', format='list')
+
+print("\n\nWEIGHT: connections['p2_to_p2']: ")
+print connections['p2_to_p2'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_e']:")
+print connections['i_to_e'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_e']: ")
+print connections['i_to_e'].get('weight', format='list')
+
+print("\n\nETA: connections['i_to_i']:")
+print connections['i_to_i'].get('eta', format='list')
+
+print("\n\nWEIGHT: connections['i_to_i']: ")
+print connections['i_to_i'].get('weight', format='list')
+'''
