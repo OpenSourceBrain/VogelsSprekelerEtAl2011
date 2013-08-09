@@ -78,7 +78,7 @@ stdp = sim.STDPMechanism(weight_dependence=sim.AdditiveWeightDependence(w_min=0.
 
 
 
-fpc 	= sim.FixedProbabilityConnector(0.02)
+fpc 	= sim.FixedProbabilityConnector(0.02, rng=NumpyRNG(seed=854))
 
 
 
