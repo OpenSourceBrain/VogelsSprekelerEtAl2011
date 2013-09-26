@@ -126,7 +126,7 @@ timeBoundKernel = 300
 
 ### SIMULATION TIMES WERE DOWNSCALED FOR TESTING PURPOSES
 
-downscaleFactor = 100
+downscaleFactor = 200
 minSimTime = 50 #[ms]
 
 eta = eta * downscaleFactor

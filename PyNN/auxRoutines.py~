@@ -741,7 +741,7 @@ def plotFig4Column(fig, column, timeStep, simTimeIni, simTimeFin, timeBoundKerne
 		ax2.get_yaxis().set_visible(False)
 		#plt.xlim((0.0, 200.0))
 	
-	plt.ylim((-15, 15))
+	#plt.ylim((0.0, 15.0))
 	#plotRaster(ax2, pattern1Spikes, 'red')
 	plotRaster3(ax2, sampledPopPattern1Spikes, 'red', 1)
 	plotRaster3(ax2, sampledPopControlSpikes, 'black', -1)
@@ -750,8 +750,7 @@ def plotFig4Column(fig, column, timeStep, simTimeIni, simTimeFin, timeBoundKerne
 
 	ax3 = fig.add_subplot(4, 6, column + 12)
 	if column == 1:
-		#plt.ylabel('Percent [%]')
-		plt.ylabel('Counts')
+		plt.ylabel('Percent [%]')
 		ax3.spines['left'].set_color('black')
 	else:
 		ax3.get_yaxis().set_visible(False)
@@ -765,8 +764,7 @@ def plotFig4Column(fig, column, timeStep, simTimeIni, simTimeFin, timeBoundKerne
 
 	ax4 = fig.add_subplot(4, 6, column + 18)
 	if column == 1:
-		#plt.ylabel('Percent [%]')
-		plt.ylabel('Counts')
+		plt.ylabel('Percent [%]')
 		ax4.spines['left'].set_color('black')
 	else:
 		ax4.get_yaxis().set_visible(False)
