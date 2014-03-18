@@ -33,7 +33,7 @@ exec("from pyNN.%s import *" % simulator_name)
 
 print "Starting PyNN with simulator: %s"%simulator_name
 
-from networkModel import *
+from vogelsEtAl2011 import *
 someCells = excPopulation.sample(12)
 someCells.record_v()
 
