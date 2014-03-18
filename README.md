@@ -6,4 +6,4 @@ balances excitation and inhibition in sensory pathways and memory networks. Scie
 
 See http://www.opensourcebrain.org/projects/vogelsetal2011 for more details.
 
-PS : Users can recieve importing issues from pyNN.utility in the python files , when working on a Virtual Machine . 
+
