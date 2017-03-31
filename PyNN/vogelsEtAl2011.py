@@ -11,7 +11,7 @@ Original implementation reference:
 Adapted from:
 
 	Vogels, T. P., H. Sprekeler, F. Zenke, C. Clopath, and W. Gerstner. 'Inhibitory Plasticity Balances
-	Excitation and Inhibition in Sensory Pathways and Memory Networks.' Science (November 10, 2011). 
+	Excitation and Inhibition in Sensory Pathways and Memory Networks.' Science (November 10, 2011).
 """
 
 #############################################
@@ -24,10 +24,11 @@ Adapted from:
 from pyNN.random import RandomDistribution, NumpyRNG
 from pyNN.utility import get_script_args, Timer, ProgressBar, init_logging, normalized_filename
 import matplotlib.pyplot as plt
+import numpy as np
 from auxRoutines import *
 from pyNN.neuron import *
 
-simulator_name = get_script_args(1)[0]  
+simulator_name = get_script_args(1)[0]
 
 exec("from pyNN.%s import *" % simulator_name)
 
@@ -39,16 +40,26 @@ timer = Timer()
 # Total of 8000 excitatory neurons and 2000 inhibitory neurons. Note that all these specified number of neurons in a population are disjoint.
 # For instance pattern1 population has a total of 720 neurons, 180 of which comprises pattern1_stim.
 
-numOfNeuronsExcPopulation = 5712 	# Excitatory neurons not including pattern1, pattern2 and patternIntersection populations
+# define population sizes includign all subpopulations
+numOfNeuronsExcPopulation = 8000
+numOfNeuronsInhibPopulation = 2000
+
+# define number of neurons in subpopulations
 numOfNeuronsPattern1 = 524		# Neurons of pattern1 not including those of patternIntersection and from neuronsPattern1_stim
 numOfNeuronsPattern1_stim = 196		# Sub-set of pattern1 which may receive external stimulation
 numOfNeuronsPattern2 = 524		# Neurons of pattern2 not including those of patternIntersection
 numOfNeuronsPattern2_stim = 196		# Sub-set of pattern2 which may receive external stimulation
 numOfNeuronsPatternIntersection = 64
 numOfNeuronsControl = 784
+# define an array of numbers in the same order as above
+numOfNeuronsList = np.array([numOfNeuronsPattern1, numOfNeuronsPattern1_stim,
+							 numOfNeuronsPattern2, numOfNeuronsPattern2_stim,
+							 numOfNeuronsPatternIntersection, numOfNeuronsControl])
 
-numOfNeuronsInhibPopulation = 2000
-
+# define arrays of start and stop indices for the slicing
+neuronPatternsEndIndices = np.cumsum(numOfNeuronsList)  # the End indices are just the cumulative sum
+neuronPatternsStartIndices = np.zeros_like(neuronPatternsEndIndices)  # the start indices need a zero at the beginning
+neuronPatternsStartIndices[1:] = neuronPatternsEndIndices[:-1]
 
 numOfSampledNeuronsPattern1_ISICV = 392
 numOfSampledNeuronsControl_ISICV = 392
@@ -93,17 +104,17 @@ synapseDelay = 0.5 # [ms]
 
 
 neuronParameters = 	{
-			'tau_m':	tau_m,	
-			'cm':		cm, 	
-			'v_rest':	v_rest,	
-			'v_thresh':	v_thresh, 	
-			'tau_syn_E':	tau_syn_E,	
-			'tau_syn_I':	tau_syn_I,	
-			'e_rev_E':	e_rev_E,	
-			'e_rev_I':	e_rev_I,	
-			'v_reset':	v_reset,	
-			'tau_refrac':	tau_refrac,	
-			'i_offset': 	i_offset	
+			'tau_m':	tau_m,
+			'cm':		cm,
+			'v_rest':	v_rest,
+			'v_thresh':	v_thresh,
+			'tau_syn_E':	tau_syn_E,
+			'tau_syn_I':	tau_syn_I,
+			'e_rev_E':	e_rev_E,
+			'e_rev_I':	e_rev_I,
+			'v_reset':	v_reset,
+			'tau_refrac':	tau_refrac,
+			'i_offset': 	i_offset
 			}
 
 
@@ -172,18 +183,18 @@ excPopulation 		= Population(numOfNeuronsExcPopulation		, cell_type, label='excP
 
 inhibPopulation 	= Population(numOfNeuronsInhibPopulation	, cell_type, label='inhibPop')
 
-pattern1 		= Population(numOfNeuronsPattern1		, cell_type, label='pattern1')
+# define the patterns as views on the excitatory populations
+pattern1 		= excPopulation[neuronPatternsStartIndices[0]:neuronPatternsEndIndices[0]]
 
-pattern1_stim 		= Population(numOfNeuronsPattern1_stim		, cell_type, label='pattern1_stim')
+pattern1_stim 		= excPopulation[neuronPatternsStartIndices[1]:neuronPatternsEndIndices[1]]
 
-pattern2 		= Population(numOfNeuronsPattern2		, cell_type, label='pattern2')
+pattern2 		= excPopulation[neuronPatternsStartIndices[2]:neuronPatternsEndIndices[2]]
 
-pattern2_stim 		= Population(numOfNeuronsPattern2_stim		, cell_type, label='pattern2_stim')
+pattern2_stim 		= excPopulation[neuronPatternsStartIndices[3]:neuronPatternsEndIndices[3]]
 
-patternIntersection 	= Population(numOfNeuronsPatternIntersection	, cell_type, label='patternIntersection')
+patternIntersection 	= excPopulation[neuronPatternsStartIndices[4]:neuronPatternsEndIndices[4]]
 
-controlPopulation	= Population(numOfNeuronsControl		, cell_type, label='controlPop')
-
+controlPopulation	= excPopulation[neuronPatternsStartIndices[5]:neuronPatternsEndIndices[5]]
 
 stimulus = Population(1000, SpikeSourcePoisson(rate=100.0))
 
@@ -197,12 +208,6 @@ rand_distr = RandomDistribution('uniform', (v_reset, v_thresh), rng=NumpyRNG(see
 
 excPopulation.initialize(v=rand_distr)
 inhibPopulation.initialize(v=rand_distr)
-pattern1.initialize(v=rand_distr)
-pattern1_stim.initialize(v=rand_distr)
-pattern2.initialize(v=rand_distr)
-pattern2_stim.initialize(v=rand_distr)
-patternIntersection.initialize(v=rand_distr)
-controlPopulation.initialize(v=rand_distr)
 
 print("-> DONE")
 
@@ -425,7 +430,6 @@ patternIntersectionSpikes 	=	patternIntersection.get_data(	'spikes', clear="true
 controlSpikes 			=	controlPopulation.get_data(	'spikes')
 inhibSpikes 			= 	inhibPopulation.get_data(	'spikes', clear="true")
 
-
 sampledPopPattern1_corr = pattern1.sample(numOfSampledNeuronsPattern1_corr)
 sampledPopControl_corr = controlPopulation.sample(numOfSampledNeuronsControl_corr)
 
@@ -439,7 +443,7 @@ sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear
 #sampledPopControlSpikes_ISICV = sampledPopControl_ISICV.get_data(	'spikes', clear="true")
 
 
-plt.ion()
+#plt.ion()
 fig = plt.figure(2, facecolor='white')
 
 simTimeIni = 0
@@ -460,15 +464,16 @@ cbar.ax.set_yticklabels(['0', '50', '100', '150', '200'])
 cbar.ax.set_ylabel('Rate [Hz]')
 cbar.ax.yaxis.labelpad = -50
 
-plt.show(block=False)
+plt.show()
 fig.canvas.draw()
 
+"""
 ## Fig. 4, A
 ##
 ## 	Inhibitory to excitatory synapses are turned to 0 efficacy
 ##	The network is forced out of the AI regime and begins to fire at high rates
 ## 	Inhibitory plasticity is turned on.
-## 	Original simulation time: 
+## 	Original simulation time:
 
 print("\n")
 print("--------------------------------------")
@@ -584,7 +589,7 @@ fig.canvas.draw()
 
 ## Fig. 4, C
 ##
-## 	The excitatory non-zero weights of the two designated memory patterns 
+## 	The excitatory non-zero weights of the two designated memory patterns
 ## 	are increased ad-hoc by a factor of 5. The neurons of hte subset begin
 ## 	to exhibit elevated and more sychronized activity
 ##	Original simulation time: 5 sec (5000 ms)
@@ -781,8 +786,5 @@ print("\nTotal simulated time: %s milliseconds" %simTimeFin)
 totalCPUTime = simCPUTime_pre + simCPUTime_4A + simCPUTime_4B + simCPUTime_4C + simCPUTime_4D + simCPUTime_4E_part1 + simCPUTime_4E_part2
 
 print("\nTotal CPU time: %d seconds (%0.2f minutes)" %(totalCPUTime, totalCPUTime/60))
-
+"""
 raw_input("Simulation finished... Press enter to exit...")
-
-
-
