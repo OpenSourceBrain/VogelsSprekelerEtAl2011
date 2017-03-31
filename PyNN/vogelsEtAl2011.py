@@ -25,6 +25,7 @@ from pyNN.random import RandomDistribution, NumpyRNG
 from pyNN.utility import get_script_args, Timer, ProgressBar, init_logging, normalized_filename
 import matplotlib.pyplot as plt
 from auxRoutines import *
+from pyNN.neuron import *
 
 simulator_name = get_script_args(1)[0]  
 
