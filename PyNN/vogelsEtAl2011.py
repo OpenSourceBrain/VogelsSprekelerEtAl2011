@@ -24,9 +24,7 @@ Adapted from:
 from pyNN.random import RandomDistribution, NumpyRNG
 from pyNN.utility import get_script_args, Timer, ProgressBar, init_logging, normalized_filename
 import matplotlib.pyplot as plt
-import numpy as np
 from auxRoutines import *
-from pyNN.neuron import *
 
 simulator_name = get_script_args(1)[0]
 
@@ -443,7 +441,7 @@ sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear
 #sampledPopControlSpikes_ISICV = sampledPopControl_ISICV.get_data(	'spikes', clear="true")
 
 
-#plt.ion()
+plt.ion()
 fig = plt.figure(2, facecolor='white')
 
 simTimeIni = 0
@@ -464,10 +462,10 @@ cbar.ax.set_yticklabels(['0', '50', '100', '150', '200'])
 cbar.ax.set_ylabel('Rate [Hz]')
 cbar.ax.yaxis.labelpad = -50
 
-plt.show()
+plt.show(block=False)
 fig.canvas.draw()
 
-"""
+
 ## Fig. 4, A
 ##
 ## 	Inhibitory to excitatory synapses are turned to 0 efficacy
