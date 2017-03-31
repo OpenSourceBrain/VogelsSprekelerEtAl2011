@@ -784,5 +784,5 @@ print("\nTotal simulated time: %s milliseconds" %simTimeFin)
 totalCPUTime = simCPUTime_pre + simCPUTime_4A + simCPUTime_4B + simCPUTime_4C + simCPUTime_4D + simCPUTime_4E_part1 + simCPUTime_4E_part2
 
 print("\nTotal CPU time: %d seconds (%0.2f minutes)" %(totalCPUTime, totalCPUTime/60))
-"""
+
 raw_input("Simulation finished... Press enter to exit...")
