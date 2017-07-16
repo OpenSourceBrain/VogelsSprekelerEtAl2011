@@ -31,7 +31,7 @@ simulator_name = get_script_args(1)[0]
 exec("from pyNN.%s import *" % simulator_name)
 
 print("\n")
-print "Starting PyNN with simulator: %s"%simulator_name
+print("Starting PyNN with simulator: %s" % simulator_name)
 
 timer = Timer()
 
@@ -519,7 +519,7 @@ sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear
 
 
 
-print("\nPloting Fig. 4A...")
+print("\nPlotting Fig. 4A...")
 
 
 simTimeIni = timePreSim
@@ -568,7 +568,7 @@ sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clea
 sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
 
 
-print("\nPloting Fig. 4B...")
+print("\nPlotting Fig. 4B...")
 
 simTimeIni = timePreSim + timeSimFig4A
 simTimeFin = timePreSim + timeSimFig4A +timeSimFig4B
@@ -643,7 +643,7 @@ sampledPopPattern1Spikes_corr = sampledPopPattern1_corr.get_data(	'spikes', clea
 sampledPopControlSpikes_corr = sampledPopControl_corr.get_data(		'spikes', clear="true")
 
 
-print("\nPloting Fig. 4C...")
+print("\nPlotting Fig. 4C...")
 
 simTimeIni = timePreSim + timeSimFig4A +timeSimFig4B
 simTimeFin = timePreSim + timeSimFig4A +timeSimFig4B+ timeSimFig4C
@@ -673,7 +673,7 @@ simCPUTime_4D = timer.diff()
 
 print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4D, simCPUTime_4D/60))
 
-print("\nPloting Fig. 4D...")
+print("\nPlotting Fig. 4D...")
 
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
@@ -747,7 +747,7 @@ simCPUTime_4E_part2 = timer.diff()
 
 print("\nTime to perform the simulation: %d seconds (%0.2f minutes)" %(simCPUTime_4E_part2, simCPUTime_4E_part2/60))
 
-print("\nploting Fig. 4E")
+print("\nPlotting Fig. 4E")
 
 
 excSpikes			= 	excPopulation.get_data(		'spikes', clear="true")
