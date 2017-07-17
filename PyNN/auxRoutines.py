@@ -26,6 +26,7 @@
 
 
 import numpy as np
+import quantities as pq
 import matplotlib.pyplot as plt
 	
 
@@ -51,7 +52,7 @@ def getNeuronISIs (neuronIndex, popSpikes):
 	if neuronSpikeTimes.size == 0 or neuronSpikeTimes.size == 1:
 		return -1 * np.ones(1)
 	else:
-		return np.diff(neuronSpikeTimes)
+		return np.diff(neuronSpikeTimes.view(pq.Quantity))
 
 
 def getNeuronISIs2 (neuronSpikes):
@@ -59,7 +60,7 @@ def getNeuronISIs2 (neuronSpikes):
 	if neuronSpikes.size == 0 or neuronSpikes.size == 1:
 		return -1 * np.ones(1)
 	else:
-		return np.diff(neuronSpikes)
+		return np.diff(neuronSpikes.view(pq.Quantity))
 
 
 def calculateNeuronFiringRate (neuronIndex, popSpikes):
@@ -327,7 +328,7 @@ def plotCorrHist(axis, numNeuronsPop, popSpikes, timeStep, simTimeIni, simTimeFi
 			if indexesSpikingNeurons[i] == 1 and indexesSpikingNeurons[j] == 1 and i != j:
 				corrCoef = calculateCorrCoef(allSpikes,i,j, autoCov, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
 				corrCoefs = np.append(corrCoefs, corrCoef)
-				print "i: %d\tj: %d\tcorrCoef: %f" %(i,j,corrCoef)
+				print("i: %d\tj: %d\tcorrCoef: %f" % (i, j, corrCoef))
 	
 	
 	if np.size(corrCoefs) != 0:	
@@ -374,7 +375,7 @@ def plotCorrDoubleHist(axis, numNeuronsPop, popSpikes, barColor, numNeuronsPop2,
 			if indexesSpikingNeurons2[i] == 1 and indexesSpikingNeurons2[j] == 1 and i != j:
 				corrCoef = calculateCorrCoef(allSpikes2,i,j, autoCov, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
 				corrCoefs2 = np.append(corrCoefs2, corrCoef)
-				print "control: i: %d\tj: %d\tcorrCoef: %f" %(i,j,corrCoef)
+				print("control: i: %d\tj: %d\tcorrCoef: %f" % (i, j, corrCoef))
 	
 	if np.size(corrCoefs2) != 0:	
 		plt.hist(corrCoefs2, histtype='stepfilled', color=barColor2, alpha=0.7)
@@ -406,7 +407,7 @@ def plotCorrDoubleHist(axis, numNeuronsPop, popSpikes, barColor, numNeuronsPop2,
 			if indexesSpikingNeurons[i] == 1 and indexesSpikingNeurons[j] == 1 and i != j:
 				corrCoef = calculateCorrCoef(allSpikes,i,j, autoCov, timeStep, simTimeIni, simTimeFin, timeBoundKernel)
 				corrCoefs = np.append(corrCoefs, corrCoef)
-				print "pattern1: i: %d\tj: %d\tcorrCoef: %f" %(i,j,corrCoef)
+				print("pattern1: i: %d\tj: %d\tcorrCoef: %f" %(i, j, corrCoef))
 	
 	if np.size(corrCoefs) != 0:	
 		plt.hist(corrCoefs, histtype='stepfilled', color=barColor, alpha=0.7)
@@ -788,23 +789,23 @@ def plotFig4Column(fig, column, timeStep, simTimeIni, simTimeFin, timeBoundKerne
 
 '''
 print("\n\nWEIGHT: connections['e_to_e']: ")
-print connections['e_to_e'].get('weight', format='list')
+print(connections['e_to_e'].get('weight', format='list'))
 
 print("\n\nWEIGHT: connections['p1_to_p1']: ")
-print connections['p1_to_p1'].get('weight', format='list')
+print(connections['p1_to_p1'].get('weight', format='list'))
 
 print("\n\nWEIGHT: connections['p2_to_p2']: ")
-print connections['p2_to_p2'].get('weight', format='list')
+print(connections['p2_to_p2'].get('weight', format='list'))
 
 print("\n\nETA: connections['i_to_e']:")
-print connections['i_to_e'].get('eta', format='list')
+print(connections['i_to_e'].get('eta', format='list'))
 
 print("\n\nWEIGHT: connections['i_to_e']: ")
-print connections['i_to_e'].get('weight', format='list')
+print(connections['i_to_e'].get('weight', format='list'))
 
 print("\n\nETA: connections['i_to_i']:")
-print connections['i_to_i'].get('eta', format='list')
+print(connections['i_to_i'].get('eta', format='list'))
 
 print("\n\nWEIGHT: connections['i_to_i']: ")
-print connections['i_to_i'].get('weight', format='list')
+print(connections['i_to_i'].get('weight', format='list'))
 '''
