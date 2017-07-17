@@ -60,7 +60,7 @@ def getNeuronISIs2 (neuronSpikes):
 	if neuronSpikes.size == 0 or neuronSpikes.size == 1:
 		return -1 * np.ones(1)
 	else:
-		return np.diff(neuronSpikes)
+		return np.diff(neuronSpikes.view(pq.Quantity))
 
 
 def calculateNeuronFiringRate (neuronIndex, popSpikes):
