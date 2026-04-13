@@ -28,7 +28,9 @@ jobs:
       run: |
         pip install git+https://github.com/OpenSourceBrain/osb-model-validation@test_pynn012
         
-
+    - name: Install extra dependencies for PyNN tests
+      run: |
+        pip install matplotlib
   
     - name: Run OMV tests on engine ${{ matrix.engine }}
       run: |
