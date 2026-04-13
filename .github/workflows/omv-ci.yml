@@ -1,0 +1,41 @@
+name: Continuous builds
+
+on:
+  push:
+    branches: [ master, development, experimental ]
+  pull_request:
+    branches: [ master, development, experimental ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.10", "3.13" ] 
+        engine: [ PyNN_NEURON ]
+
+    steps:
+    - uses: actions/checkout@v6
+    
+    - name: Set up Python  ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version:  ${{ matrix.python-version }}
+        
+    - name: Install OMV
+      run: |
+        pip install git+https://github.com/OpenSourceBrain/osb-model-validation@test_pynn012
+        
+
+  
+    - name: Run OMV tests on engine ${{ matrix.engine }}
+      run: |
+        omv all -V --engine=${{ matrix.engine }}
+        
+      
+
+    - name: OMV final version info
+      run: |
+        omv list -V # list installed engines
