@@ -3,3 +3,4 @@
 /PyNN/*.dat
 *.*~
 /.project
+/PyNN/__pycache__

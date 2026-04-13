@@ -96,11 +96,11 @@ sim.run(simTimeFin - simTimeIni)
 
 
 print("\n\nETA: input to output:")
-print connections.get('eta', format='list')
+print(connections.get('eta', format='list'))
 
 
 print("\n\ninput to output:")
-print connections.get('weight', format='list')
+print(connections.get('weight', format='list'))
 
 
 

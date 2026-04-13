@@ -781,7 +781,7 @@ totalCPUTime = simCPUTime_pre + simCPUTime_4A + simCPUTime_4B + simCPUTime_4C + 
 
 print("\nTotal CPU time: %d seconds (%0.2f minutes)" %(totalCPUTime, totalCPUTime/60))
 
-raw_input("Simulation finished... Press enter to exit...")
+print("Simulation finished!")
 
 
 

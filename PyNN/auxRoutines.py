@@ -383,7 +383,7 @@ def plotCorrDoubleHist(axis, numNeuronsPop, popSpikes, barColor, numNeuronsPop2,
 
 	seg = popSpikes.segments[0]
 	allSpikes = seg.spiketrains
-	numSpikeTrains = np.size(allSpikes)
+	numSpikeTrains = len(allSpikes)
 	#print "allSpikes: "
 	#print allSpikes
 	#print("\n\n")

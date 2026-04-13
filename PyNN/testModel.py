@@ -31,7 +31,7 @@ from pyNN.utility import get_script_args
 simulator_name = get_script_args(1)[0]  
 exec("from pyNN.%s import *" % simulator_name)
 
-print "Starting PyNN with simulator: %s"%simulator_name
+print("Starting PyNN with simulator: %s"%simulator_name)
 
 from vogelsEtAl2011 import *
 someCells = excPopulation.sample(12)
@@ -43,6 +43,6 @@ run(tstop)
 someCells.print_v("someCells_%s.v" % simulator_name)
 
 
-print "Finished simulation of %g ms"%tstop
+print("Finished simulation of %g ms"%tstop)
 
 end()
